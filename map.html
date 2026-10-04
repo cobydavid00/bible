@@ -35,12 +35,34 @@ html,body{height:100%}
 :root{--navh:44px}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 .app{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100% - var(--navh));min-height:0;width:100%;max-width:100%;overflow:hidden}
 .side{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line);background:var(--surface)}
 .list,.info,.tabs,.head{min-width:0;max-width:100%}
 .head{padding:18px 18px 10px}
 h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spacing:-.01em}
 .lede{margin:4px 0 0;color:var(--ink-2);font-size:12.5px}
+.mode{display:flex;gap:6px;padding:0 14px 8px}
+.mode button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.mode button[aria-selected="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.pfind{padding:0 14px 10px}
+.pfind select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 8px;font:inherit;font-size:13px}
+.list .sw{width:10px;height:10px;border-radius:50%;display:inline-block;vertical-align:-1px}
+.info .why{margin:4px 0 2px;font-size:13.5px;color:var(--ink)}
+.info .why::before{content:'왜 나오나 · ';color:var(--muted);font-size:12px}
+.lineage{display:flex;flex-wrap:wrap;align-items:center;gap:3px 4px;margin:8px 0;font-size:12px}
+.lineage .sep{color:var(--muted)}
+.pc{border:1px solid var(--line);background:var(--band);color:var(--ink);border-radius:999px;padding:2px 9px;font:inherit;font-size:12px;cursor:pointer;line-height:1.5}
+.pc:hover{background:var(--hover)}
+.pc.cur{background:var(--ink);color:var(--ground);border-color:var(--ink);cursor:default}
+.fam{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;margin:6px 0 10px;font-size:12.5px;align-items:baseline}
+.fam dt{color:var(--muted)}
+.fam dd{margin:0;display:flex;flex-wrap:wrap;gap:4px}
+.steps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:12.5px;align-items:baseline}
+.steps .at{color:var(--ink);font-weight:600;white-space:nowrap;cursor:pointer}
+.steps .at:hover{text-decoration:underline}
+.est{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 5px;vertical-align:middle}
 .tabs{display:flex;gap:6px;padding:0 14px 10px}
 .tabs button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:8px;padding:7px 8px;font:inherit;font-size:12.5px;cursor:pointer;text-align:left;line-height:1.3}
 .tabs button b{display:block;font-family:var(--display);font-size:13px;color:var(--ink)}
@@ -120,6 +142,11 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
 .person rect{fill:var(--ink);stroke:var(--surface);stroke-width:1}
 .person text{font-family:var(--ui);font-size:11px;font-weight:600;fill:var(--ground)}
 .person line{stroke:var(--ink);stroke-width:1}
+.person{cursor:pointer}
+.pm .dot{fill:var(--pc);stroke:var(--surface);stroke-width:1.6}
+.pm .num{font-family:var(--ui);font-size:9.5px;font-weight:700;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.rg.eden{stroke-dasharray:6 4;fill-opacity:.06}
+.rl.eden .rt{font-size:11.5px;letter-spacing:.1em}
 @media (prefers-reduced-motion: reduce){.place.pulse .ring,.place.pulse .dot{animation:none}}
 @media (max-width:760px){
   .app{grid-template-columns:minmax(0,1fr);grid-template-rows:50vh minmax(0,1fr)}
@@ -127,10 +154,12 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
   .side{order:2;border-right:0;border-top:1px solid var(--line)}
   .mapwrap{order:1}
   .head{display:none}
-  .tabs{padding:8px 10px 6px;gap:6px}
+  .mode{padding:8px 10px 6px}
+  .pfind{padding:0 10px 8px}
+  .tabs{padding:0 10px 6px;gap:6px}
   .tabs button{padding:6px 8px;font-size:12px}
   .tabs button b{font-size:12.5px}
-  .list{display:flex;overflow-x:auto;padding:6px 10px;gap:6px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .list{display:flex;overflow-x:auto;overflow-y:hidden;flex:0 0 auto;padding:6px 10px;gap:6px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
   .list li{flex:0 0 auto;scroll-snap-align:center}
   .list button{grid-template-columns:auto auto;white-space:nowrap;padding:8px 12px;background:var(--band);min-height:38px}
   .list .r{display:none}
@@ -175,7 +204,9 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
       <h1>성경 이야기 지도</h1>
       <p class="lede">장면을 고르면 그때 누가 어디에 있었고, 어디로 움직였고, 무슨 일이 어디서 있었는지 지도에 표시돼요. 나라 이름은 그 시대 기준이에요.</p>
     </div>
+    <div class="mode" role="tablist" id="mode"><button role="tab" data-m="scene" aria-selected="true">장면별</button><button role="tab" data-m="person" aria-selected="false">인물별</button></div>
     <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="pfind" id="pfind" hidden><select id="pall" aria-label="인물 찾기"></select></div>
     <ol class="list" id="list"></ol>
     <div class="info" id="info"></div>
     <details class="legend">
@@ -183,7 +214,8 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
       <ul>
         <li><svg width="22" height="12"><circle cx="11" cy="6" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.7"/></svg>장소</li>
         <li><svg width="22" height="16"><circle cx="11" cy="8" r="7" fill="none" stroke="var(--ev)" stroke-width="1.6"/><circle cx="11" cy="8" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.7"/></svg>이 장면의 사건이 있는 곳</li>
-        <li><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="6" fill="var(--ink)"/></svg>인물이 있는 곳</li>
+        <li><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="6" fill="var(--ink)"/></svg>인물이 있는 곳 (누르면 그 사람의 여정으로)</li>
+        <li><svg width="22" height="18"><circle cx="11" cy="9" r="8" fill="var(--c-law)" stroke="var(--surface)" stroke-width="1.6"/><text x="11" y="9" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">3</text></svg>인물별: 여정 순서</li>
         <li><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--c-law)" stroke-width="2.2" stroke-linecap="round"/></svg>이동 (사람 색: 아브라함 파랑 · 야곱 주황 · 요셉 분홍 · 모세 황토 · 여호수아 초록)</li>
         <li><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--c-law)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 3"/></svg>짧은 이동 · 추정 경로</li>
         <li><svg width="22" height="14"><ellipse cx="11" cy="7" rx="10" ry="6" fill="var(--region)" fill-opacity=".2" stroke="var(--region)" stroke-opacity=".5"/></svg>나라·민족 (대략적인 범위)</li>
@@ -236,6 +268,8 @@ const PLACES = {
   '그랄':        {p:[34.61,31.38], note:'아비멜렉의 성. 아브라함과 이삭이 머문 곳'},
   '가사':        {p:[34.47,31.50], note:'해안 길의 관문'},
   '소돔':        {p:[35.38,31.08], note:'롯이 살던 성. 위치는 사해 남쪽으로 추정'},
+  '소알':        {p:[35.42,30.97], note:'소돔 멸망 날 롯이 피신한 작은 성 (전통적 위치)'},
+  '모압 산지':   {p:[35.75,31.05], note:'롯이 두 딸과 숨어 산 산. 모압·암몬의 조상 (위치 근사)'},
   '여리고':      {p:[35.44,31.87], note:'요단 건너 첫 성. 성벽이 무너짐'},
   '길갈':        {p:[35.49,31.86], note:'요단 건넌 뒤 첫 진영, 정복 전쟁의 본부'},
   '모압 평지':   {p:[35.64,31.84], note:'싯딤. 40년 끝, 모세의 고별 설교. 발람 사건'},
@@ -273,6 +307,9 @@ const REGIONS = [
   {layer:'near',  t:'사해',     sub:'염해',           c:[35.47,31.45], rx:0, ry:0},
   {layer:'near',  t:'갈릴리 호수', sub:'긴네렛',      c:[35.59,32.82], rx:0, ry:0},
   {layer:'near',  t:'요단강',   sub:'',               c:[35.56,32.40], rx:0, ry:0, rot:-80},
+  // 에덴 추정 후보 (창 2:10–14의 티그리스·유프라테스 때문에 두 설). 장면이나 인물에 extra:'eden' 이 있을 때만 보임
+  {layer:'eden', t:'에덴 후보 ①', sub:'두 강의 상류 · 아르메니아 고원', c:[39.8,38.9], rx:1.7, ry:1.0, max:1e9},
+  {layer:'eden', t:'에덴 후보 ②', sub:'두 강의 하류 · 페르시아만 어귀', c:[47.6,30.6], rx:1.7, ry:1.0, max:1e9},
   // 1주 · 족장 시대 (BC 2100–1800)
   {layer:'w1', t:'이집트',       sub:'중왕국 (11–12왕조)',          c:[31.3,27.6],  rx:1.5, ry:4.2, rot:12},
   {layer:'w1', t:'가나안',       sub:'가나안 족속의 성읍들',       c:[34.75,32.35], rx:0.9, ry:1.6},
@@ -337,8 +374,8 @@ const SCENES = [
    note:'오늘 이야기가 펼쳐지는 땅. 동쪽에는 두 강 사이의 메소포타미아, 서쪽에는 나일강의 이집트. 그 둘 사이 좁은 길목이 가나안이에요. 큰 나라들 사이에 끼어 있는 복도 같은 땅이라, 성경 이야기는 거의 다 이 복도에서 벌어져요.',
    places:[], routes:[], people:[], events:[]},
 
-  {week:1, id:'w1-1', title:'노아의 홍수와 바벨탑', ref:'창 6–11', era:'연대 미상', view:'world', layer:'w1',
-   note:'창세기 1–11장은 "온 인류" 이야기예요. 에덴의 위치는 알 수 없지만 2장이 티그리스·유프라테스 강을 언급해요. 홍수 뒤 방주는 아라랏 산에 머물렀고, 바벨탑은 시날 평지, 곧 훗날의 바빌론 자리예요. 여기서 말이 흩어지고 민족들이 퍼져 나가요.',
+  {week:1, id:'w1-1', title:'노아의 홍수와 바벨탑', ref:'창 6–11', era:'연대 미상', view:'world', layer:'w1', extra:'eden',
+   note:'창세기 1–11장은 "온 인류" 이야기예요. 에덴의 위치는 알 수 없지만 2장이 네 강 중 티그리스·유프라테스를 말해요. 그래서 두 강이 시작되는 아르메니아 고원이나 두 강이 만나는 페르시아만 어귀로 짐작해요 (점선). 홍수 뒤 방주는 아라랏 산에 머물렀고, 바벨탑은 시날 평지, 곧 훗날의 바빌론 자리예요. 여기서 말이 흩어지고 민족들이 퍼져 나가요.',
    places:['아라랏산','바벨'], routes:[], people:[{name:'노아', at:'아라랏산'}],
    events:[{at:'아라랏산', t:'홍수 뒤 방주가 머문 곳', ref:'창 8장'},{at:'바벨', t:'바벨탑, 언어가 흩어짐', ref:'창 11장'}]},
 
@@ -457,6 +494,233 @@ const SCENES = [
    events:[{at:'실로', t:'성막을 세움, 나머지 땅 분배', ref:'수 18장'},{at:'헤브론', t:'갈렙이 받은 땅', ref:'수 14장'},{at:'세겜', t:'고별 연설과 언약 갱신', ref:'수 24장'},{at:'딤낫세라', t:'여호수아 110세에 죽어 묻힘', ref:'수 24:29–30'}]},
 ];
 
+// ===== 인물별 여정 =====
+// steps 순서대로 선을 잇고, est:true 는 본문에 자리가 없는 추정 구간(점선). 같은 곳을 여러 번 가면 번호가 여러 개 붙음.
+const PEOPLE = [
+  // ---- 여정이 있는 주요 인물 (steps) ----
+  {f:'terah', s:['sarah','hagar','keturah'], g:'아브라함 집안', id:'abraham', name:'아브라함', color:'law', layer:'w1', why:'믿음의 조상. 떠나라는 말에 떠났고, 자손·땅·복의 약속을 받음', era:'BC 2166–1991 (전통 연대)',
+   note:'우르에서 가나안까지 1,500km. 그 뒤 100년은 벧엘·헤브론·브엘세바 사이를 오가며 장막에서 살았어요. 끝내 산 땅은 막벨라 굴이 딸린 밭 하나 (창 23:17–20).',
+   steps:[
+    {at:'우르', t:'고향. 아버지 데라와 함께 출발', ref:'창 11:28–31'},
+    {at:'하란', t:'데라의 죽음. 75세에 부르심', ref:'창 11:32, 12:1–4'},
+    {at:'세겜', t:'가나안 첫 제단, "이 땅을 네 자손에게"', ref:'창 12:6–7'},
+    {at:'벧엘', t:'두 번째 제단', ref:'창 12:8'},
+    {at:'브엘세바', t:'남쪽 네게브로 (위치 근사)', ref:'창 12:9', est:true},
+    {at:'멤피스', t:'기근을 피해 이집트. 사라를 누이라 함 (궁 위치 추정)', ref:'창 12:10–20', est:true},
+    {at:'벧엘', t:'돌아와 처음 제단 자리에서 예배. 롯과 갈라섬', ref:'창 13:1–12'},
+    {at:'헤브론', t:'마므레 상수리 수풀에 정착, 제단', ref:'창 13:18'},
+    {at:'단', t:'잡혀간 롯을 구하러 추격, 다메섹 북쪽 호바까지', ref:'창 14:14–16', est:true},
+    {at:'살렘', t:'돌아오는 길, 왕의 골짜기에서 살렘 왕 멜기세덱을 만남 (위치 전통적)', ref:'창 14:17–20', est:true},
+    {at:'헤브론', t:'마므레로 돌아옴. 언약과 별, 하갈·이스마엘, 할례와 새 이름, 손님 셋, 소돔 흥정', ref:'창 15–18장'},
+    {at:'그랄', t:'아비멜렉. 이 땅에 머물 때 이삭 출생 (100세)', ref:'창 20:1–21:7'},
+    {at:'브엘세바', t:'맹세의 우물. 하갈과 이스마엘을 내보냄', ref:'창 21:8–34'},
+    {at:'살렘', t:'모리아 산, 이삭을 바치려 함 (전통적 위치)', ref:'창 22:1–14', est:true},
+    {at:'브엘세바', t:'돌아와 거주', ref:'창 22:19'},
+    {at:'헤브론', t:'사라의 죽음(127세), 막벨라 굴. 175세에 죽어 같은 굴에', ref:'창 23장, 25:7–10'}]},
+
+  {f:'haran', g:'아브라함 집안', id:'lot', name:'롯', color:'law', layer:'w1', why:'아브라함의 조카. 소돔을 고른 사람. 모압·암몬의 조상', era:'BC 2100경',
+   note:'삼촌 아브라함을 따라 가나안까지 왔다가, 물 좋은 땅을 고르고 소돔으로 들어간 사람.',
+   steps:[
+    {at:'우르', t:'할아버지 데라를 따라 출발', ref:'창 11:31'},
+    {at:'하란', t:'아브라함과 함께 출발', ref:'창 12:4–5'},
+    {at:'멤피스', t:'아브라함과 함께 이집트에 다녀옴 (궁 위치 추정)', ref:'창 13:1', est:true},
+    {at:'벧엘', t:'가축이 많아져 목자들이 다툼', ref:'창 13:1–7'},
+    {at:'소돔', t:'요단 들판을 골라 소돔 가까이, 그 뒤 성 안에', ref:'창 13:10–12, 14:12'},
+    {at:'단', t:'동방 왕들에게 잡혀갔다가 아브라함이 구출', ref:'창 14:12–16', est:true},
+    {at:'소돔', t:'성문에 앉은 롯, 천사 둘을 맞음', ref:'창 19:1–3'},
+    {at:'소알', t:'소돔 멸망 날 피신. 아내는 소금 기둥', ref:'창 19:15–26'},
+    {at:'모압 산지', t:'산의 굴에 삶. 모압·암몬의 조상', ref:'창 19:30–38', est:true}]},
+
+  {f:'abraham', m:'sarah', s:['rebekah'], g:'아브라함 집안', id:'isaac', name:'이삭', color:'law', layer:'w1', why:'약속의 아들. 모리아 산에 묶였던 아이. 에서·야곱의 아버지', era:'BC 2066–1886',
+   note:'평생 가나안 남쪽을 벗어나지 않은 사람. 아버지와 아들 사이에서 조용히 우물을 파며 살았어요.',
+   steps:[
+    {at:'그랄', t:'출생 즈음 아버지가 머물던 땅', ref:'창 20:1, 21:1–5'},
+    {at:'브엘세바', t:'어린 시절. 이스마엘이 떠남', ref:'창 21:8–34'},
+    {at:'살렘', t:'모리아 산, 번제단 위에 묶임 (전통적 위치)', ref:'창 22:1–14', est:true},
+    {at:'브엘세바', t:'브엘라해로이(네게브)에 살며 리브가와 결혼(40세). 20년 뒤 쌍둥이 (위치 근사)', ref:'창 24:62–67, 25:11, 25:20–26', est:true},
+    {at:'그랄', t:'기근. 아비멜렉, 리브가를 누이라 함. 우물 다툼', ref:'창 26:1–22'},
+    {at:'브엘세바', t:'우물, 하나님의 약속, 아비멜렉과 맹세. 눈이 어두워 야곱을 에서로 알고 축복함', ref:'창 26:23–33, 27장'},
+    {at:'헤브론', t:'마므레에서 180세에 죽음. 에서와 야곱이 장사', ref:'창 35:27–29'}]},
+
+  {f:'isaac', m:'rebekah', s:['leah','rachel','bilhah','zilpah'], g:'아브라함 집안', id:'jacob', name:'야곱', color:'hist', layer:'w1', why:'열두 지파의 아버지. 이름이 "이스라엘"이 된 사람', era:'BC 2006–1859',
+   note:'브엘세바에서 하란으로 도망쳐 20년, 돌아와 이스라엘이 되고, 말년에는 요셉을 따라 이집트로. 130세에 바로 앞에서 자기 삶을 "험악한 나그네 길"이라고 했어요 (창 47:9). 147세에 죽음.',
+   steps:[
+    {at:'브엘세바', t:'출생과 성장 (출생은 브엘라해로이 근처, 위치 근사). 팥죽, 가로챈 축복', ref:'창 25:11, 25:24–34, 27장, 28:10', est:true},
+    {at:'벧엘', t:'돌베개와 사다리 꿈', ref:'창 28:10–22'},
+    {at:'하란', t:'라반 밑에서 20년. 레아·라헬, 아들 열한 명', ref:'창 29–31장'},
+    {at:'브니엘', t:'얍복 강가의 씨름, 이스라엘이라는 이름. 에서와 화해', ref:'창 32–33장'},
+    {at:'세겜', t:'땅을 사고 제단. 디나 사건', ref:'창 33:18–34장'},
+    {at:'벧엘', t:'다시 벧엘, 제단', ref:'창 35:1–15'},
+    {at:'베들레헴', t:'라헬의 죽음, 베냐민 출생', ref:'창 35:16–20'},
+    {at:'헤브론', t:'아버지 이삭 곁에 정착. 요셉을 잃음', ref:'창 35:27, 37:1–35'},
+    {at:'브엘세바', t:'이집트로 가기 전 제사, "두려워 마라"', ref:'창 46:1–4'},
+    {at:'고센', t:'70명과 함께 정착. 17년 더 살고 147세에 죽음', ref:'창 46:28–47:12, 47:28, 49:33'},
+    {at:'헤브론', t:'긴 장례 행렬 끝에 막벨라 굴에 묻힘', ref:'창 50:1–13', est:true}]},
+
+  {f:'isaac', m:'rebekah', g:'아브라함 집안', id:'esau', name:'에서', color:'hist', layer:'w1', why:'야곱의 쌍둥이 형. 에돔의 조상', era:'BC 2006경',
+   note:'장자권을 팥죽에 판 형. 세일 산으로 가서 에돔의 조상이 돼요.',
+   steps:[
+    {at:'브엘세바', t:'쌍둥이 형 (출생은 브엘라해로이 근처, 위치 근사). 팥죽, 축복을 빼앗기고 통곡', ref:'창 25:11, 25:25–34, 27:30–41', est:true},
+    {at:'세일', t:'야곱이 돌아올 때 이미 세일 땅 에돔 들에 살고 있었음', ref:'창 32:3'},
+    {at:'브니엘', t:'400명을 데리고 와서, 달려와 야곱을 안음. 그 날로 세일로 돌아감', ref:'창 32:6, 33:1–4, 33:16'},
+    {at:'헤브론', t:'아버지 이삭을 야곱과 함께 장사', ref:'창 35:29'},
+    {at:'세일', t:'야곱을 떠나 세일 산에 정착. 자손이 에돔 족속', ref:'창 36:6–8, 36:9–43'}]},
+
+  {f:'jacob', m:'rachel', s:['asenath'], g:'야곱의 열두 아들', id:'joseph', name:'요셉', color:'gosp', layer:'w1', why:'팔려 간 동생이 이집트 총리가 되어 가족을 살림. 이집트 체류 430년의 시작', era:'BC 1915–1805',
+   note:'17세에 팔려 가서 30세에 총리, 110세에 죽음. 관은 이집트에 남았다가 360년쯤 뒤(BC 1805 → 1446) 출애굽 때 메고 나와 세겜에 묻혀요.',
+   steps:[
+    {at:'하란', t:'출생 (야곱이 하란에 있을 때)', ref:'창 30:22–24'},
+    {at:'헤브론', t:'17세, 채색옷과 꿈', ref:'창 37:1–11'},
+    {at:'세겜', t:'형들을 찾아감', ref:'창 37:12–14'},
+    {at:'도단', t:'구덩이, 은 20에 팔림', ref:'창 37:17–28'},
+    {at:'멤피스', t:'보디발의 집, 감옥, 바로의 꿈, 30세에 총리 (궁 위치 추정)', ref:'창 39–41장', est:true},
+    {at:'고센', t:'아버지를 맞으러 올라감', ref:'창 46:28–29'},
+    {at:'헤브론', t:'아버지의 장례', ref:'창 50:7–13'},
+    {at:'멤피스', t:'110세에 죽음, 입관 (추정)', ref:'창 50:22–26', est:true},
+    {at:'세겜', t:'출애굽 때 뼈를 메고 나와, 정복 뒤 세겜에 묻힘', ref:'출 13:19, 수 24:32', est:true}]},
+
+  {g:'족장 시대 (추정)', id:'job', name:'욥', color:'poet', layer:'w1', why:'족장 시대의 의인. "왜 착한 사람이 고난받나"의 주인공', era:'족장 시대로 봄',
+   note:'우스 땅. 어딘지 확실하지 않아요. 움직인 기록이 없는 사람이라 한 점이에요.',
+   steps:[
+    {at:'우스', t:'모든 것을 잃고, 친구들과 논쟁하고, 폭풍 속 하나님을 만나고, 회복', ref:'욥 1–42장', est:true}]},
+
+  {f:'amram', m:'jochebed', s:['zipporah'], g:'출애굽 세대', id:'moses', name:'모세', color:'proph', layer:'w2', why:'이스라엘을 이집트에서 이끌어 낸 사람. 율법을 받음. 오경의 저자(전통)', era:'BC 1526–1406',
+   note:'이집트 궁에서 40년, 미디안에서 40년, 광야에서 40년. 약속의 땅은 느보산에서 바라보기만 했어요.',
+   steps:[
+    {at:'고센', t:'출생, 갈대 상자, 바로의 딸 (이스라엘이 살던 고센으로 봄)', ref:'출 2:1–10, 9:26, 창 47:27'},
+    {at:'멤피스', t:'바로의 궁에서 자람 (위치 추정). 40세에 이집트 사람을 죽임', ref:'출 2:11–15, 행 7:22–23', est:true},
+    {at:'미디안', t:'40년 피신. 이드로, 십보라', ref:'출 2:15–22, 행 7:29–30', est:true},
+    {at:'시내산', t:'호렙의 떨기나무, 부르심', ref:'출 3:1–4:17'},
+    {at:'고센', t:'열 재앙, 유월절', ref:'출 5–12장'},
+    {at:'홍해 횡단', t:'바다가 갈라짐 (전통적 위치)', ref:'출 14장', est:true},
+    {at:'르비딤', t:'반석의 물, 아말렉 (위치 추정)', ref:'출 17장', est:true},
+    {at:'시내산', t:'십계명, 금송아지, 성막. 1년', ref:'출 19–40장, 민 10:11'},
+    {at:'가데스바네아', t:'열두 정탐꾼, 40년 선고. 반석을 침', ref:'민 13–14장, 20:1–13'},
+    {at:'호르산', t:'아론의 죽음 (전통적 위치)', ref:'민 20:22–29', est:true},
+    {at:'에시온게벨', t:'에돔을 돌아 홍해 길로. 놋뱀', ref:'민 21:4–9, 신 2:8', est:true},
+    {at:'헤스본', t:'아모리 왕 시혼을 꺾음', ref:'민 21:21–31'},
+    {at:'에드레이', t:'바산 왕 옥을 꺾음', ref:'민 21:33–35'},
+    {at:'모압 평지', t:'발람. 신명기 고별 설교. 여호수아 임명', ref:'민 22–25장, 신 1–33장'},
+    {at:'느보산', t:'약속의 땅을 바라보고 120세에 죽음', ref:'신 34:1–7'}]},
+
+  {f:'nun', g:'출애굽 세대', id:'joshua', name:'여호수아', color:'poet', layer:'w2', why:'모세의 후계자. 가나안 정복과 땅 분배를 이끎', era:'지도자 BC 1406–1380경 (출애굽 때부터 활동)',
+   note:'모세의 수종자였다가 후계자. 요단을 건너 정복을 이끌고, 세겜에서 마지막 말을 남겨요.',
+   steps:[
+    {at:'고센', t:'이집트에서 태어난 에브라임 지파 사람 (출애굽 세대)', ref:'민 13:8, 16', est:true},
+    {at:'르비딤', t:'아말렉과의 전투를 지휘 (위치 추정)', ref:'출 17:8–13', est:true},
+    {at:'시내산', t:'모세의 수종자로 산에 동행', ref:'출 24:13, 32:17'},
+    {at:'가데스바네아', t:'열두 정탐꾼 중 하나. 갈렙과 함께 "들어갈 수 있다"', ref:'민 13:8, 14:6–9'},
+    {at:'모압 평지', t:'모세의 후계자로 세워짐', ref:'민 27:18–23, 신 31:7–8'},
+    {at:'길갈', t:'요단을 건너 진을 침. 할례, 유월절', ref:'수 3–5장'},
+    {at:'여리고', t:'7일 행진, 성벽 붕괴', ref:'수 6장'},
+    {at:'아이', t:'아간의 죄, 패배와 승리', ref:'수 7–8장'},
+    {at:'세겜', t:'에발산·그리심산에서 율법 낭독', ref:'수 8:30–35'},
+    {at:'기브온', t:'속임수 동맹, 다섯 왕과 전투. 해가 멈춤', ref:'수 9–10장'},
+    {at:'라기스', t:'남부 성읍들 정복', ref:'수 10:28–43'},
+    {at:'하솔', t:'북부 연합, 메롬 물가', ref:'수 11장'},
+    {at:'실로', t:'성막을 세우고 땅 분배', ref:'수 18장'},
+    {at:'세겜', t:'고별 연설, "나와 내 집은"', ref:'수 24:1–28'},
+    {at:'딤낫세라', t:'110세에 죽어 묻힘', ref:'수 24:29–30'}]},
+
+  {f:'jephunneh', g:'출애굽 세대', id:'caleb', name:'갈렙', color:'poet', layer:'w2', why:'열두 정탐꾼 중 믿은 두 사람 중 하나. 85세에 헤브론을 받음', era:'BC 1446–1400경 활동',
+   note:'정탐꾼 열둘 중 "들어갈 수 있다"고 한 둘 중 하나. 45년 뒤 85세에 자기가 밟았던 헤브론을 달라고 해요.',
+   steps:[
+    {at:'가데스바네아', t:'40세, 유다 지파 정탐꾼', ref:'민 13:6, 수 14:7'},
+    {at:'헤브론', t:'에스골 골짜기까지 정탐, 포도송이', ref:'민 13:22–24'},
+    {at:'가데스바네아', t:'"올라가서 차지하자", 돌에 맞을 뻔', ref:'민 13:30, 14:6–10'},
+    {at:'길갈', t:'85세, 여호수아에게 헤브론을 요구', ref:'수 14:6–12'},
+    {at:'헤브론', t:'아낙 자손을 쫓아내고 차지', ref:'수 14:13–15, 15:13–14'}]},
+
+  {g:'출애굽 세대', id:'israel', name:'이스라엘 백성', color:'proph', layer:'w2', why:'야곱의 자손 전체. 70명 → 한 민족', era:'BC 1876–1400',
+   note:'70명이 이집트로 내려가 430년, 장정 60만이 되어 나와 광야 40년, 그리고 가나안. 민족 전체의 길.',
+   steps:[
+    {at:'헤브론', t:'야곱의 집안 (요셉이 팔릴 때)', ref:'창 37:1, 14'},
+    {at:'고센', t:'70명 정착 → 430년, 노예, 장정 60만', ref:'창 46:27, 출 1:7–14, 12:37–41'},
+    {at:'숙곳', t:'출애굽 첫 숙영지 (위치 추정)', ref:'출 12:37', est:true},
+    {at:'홍해 횡단', t:'바다를 건넘 (전통적 위치)', ref:'출 14장', est:true},
+    {at:'시내산', t:'언약, 성막. 1년', ref:'출 19장–민 10장'},
+    {at:'가데스바네아', t:'불신, 38년 광야', ref:'민 13–14장, 신 2:14'},
+    {at:'모압 평지', t:'새 세대, 모세의 고별', ref:'민 22:1, 신명기'},
+    {at:'길갈', t:'요단을 건너 가나안에', ref:'수 3–4장'},
+    {at:'실로', t:'성막, 땅 분배. 사사 시대의 중심', ref:'수 18:1'}]},
+
+  // ---- 족보로 이어지는 인물들 (여정 없음). g = 묶음 ----
+  {id:'adam', name:'아담', g:'창조에서 홍수까지', era:'930세', extra:'eden', why:'첫 사람. 흙으로 지어져 에덴에 살다 쫓겨남', ref:'창 2–3장, 5:1–5', s:['eve']},
+  {id:'eve', name:'하와', g:'창조에서 홍수까지', extra:'eden', why:'"모든 산 자의 어머니". 뱀의 말을 듣고 열매를 먹음', ref:'창 2:21–3:20'},
+  {id:'cain', name:'가인', g:'창조에서 홍수까지', f:'adam', m:'eve', why:'첫 아들, 농부. 동생 아벨을 죽이고 떠돌이가 됨. 에덴 동쪽 놋 땅', ref:'창 4:1–17'},
+  {id:'abel', name:'아벨', g:'창조에서 홍수까지', f:'adam', m:'eve', why:'둘째, 목자. 제물을 받으심. 형에게 살해됨', ref:'창 4:2–8'},
+  {id:'seth', name:'셋', g:'창조에서 홍수까지', f:'adam', m:'eve', era:'912세', why:'아벨 대신 주신 셋째 아들. 노아와 아브라함으로 이어지는 줄기', ref:'창 4:25, 5:3–8'},
+  {id:'enosh', name:'에노스', g:'창조에서 홍수까지', f:'seth', era:'905세', why:'"그때 사람들이 여호와의 이름을 부르기 시작"', ref:'창 4:26, 5:6–11'},
+  {id:'kenan', name:'게난', g:'창조에서 홍수까지', f:'enosh', era:'910세', why:'5장 족보의 넷째', ref:'창 5:9–14'},
+  {id:'mahalalel', name:'마할랄렐', g:'창조에서 홍수까지', f:'kenan', era:'895세', why:'5장 족보의 다섯째', ref:'창 5:12–17'},
+  {id:'jared', name:'야렛', g:'창조에서 홍수까지', f:'mahalalel', era:'962세', why:'에녹의 아버지', ref:'창 5:15–20'},
+  {id:'enoch', name:'에녹', g:'창조에서 홍수까지', f:'jared', era:'365년', why:'하나님과 동행하다 죽음 없이 데려가심', ref:'창 5:21–24'},
+  {id:'methuselah', name:'므두셀라', g:'창조에서 홍수까지', f:'enoch', era:'969세', why:'성경에서 가장 오래 산 사람. 홍수가 난 해에 죽음', ref:'창 5:25–27'},
+  {id:'lamech', name:'라멕', g:'창조에서 홍수까지', f:'methuselah', era:'777세', why:'노아의 아버지. "이 아들이 … 우리를 안위하리라"', ref:'창 5:28–31'},
+  {id:'noah', name:'노아', g:'창조에서 홍수까지', f:'lamech', era:'950세', at:'아라랏산', layer:'w1', why:'의인. 방주로 홍수를 건넘. 세 아들에게서 온 민족이 나옴', ref:'창 6–9장'},
+  {id:'shem', name:'셈', g:'홍수에서 아브라함까지', f:'noah', era:'600세', why:'노아의 아들. 셈족, 아브라함의 조상', ref:'창 9:26, 11:10–11'},
+  {id:'ham', name:'함', g:'홍수에서 아브라함까지', f:'noah', why:'가나안·미스라임(이집트)·구스의 아버지', ref:'창 9:22–25, 10:6'},
+  {id:'japheth', name:'야벳', g:'홍수에서 아브라함까지', f:'noah', why:'북쪽과 바닷가 민족들의 조상', ref:'창 10:2–5'},
+  {id:'canaan', name:'가나안', g:'홍수에서 아브라함까지', f:'ham', why:'함의 아들. 가나안 땅과 가나안 족속 이름의 뿌리. 노아의 저주', ref:'창 9:25, 10:15–19'},
+  {id:'arpachshad', name:'아르박삿', g:'홍수에서 아브라함까지', f:'shem', era:'438세', why:'홍수 2년 뒤 출생', ref:'창 11:10–13'},
+  {id:'shelah', name:'셀라', g:'홍수에서 아브라함까지', f:'arpachshad', era:'433세', why:'11장 족보', ref:'창 11:12–15'},
+  {id:'eber', name:'에벨', g:'홍수에서 아브라함까지', f:'shelah', era:'464세', why:'"히브리"라는 말의 뿌리로 봄', ref:'창 11:14–17, 10:21'},
+  {id:'peleg', name:'벨렉', g:'홍수에서 아브라함까지', f:'eber', era:'239세', why:'"그 때에 세상이 나뉘었음" — 바벨탑 즈음', ref:'창 10:25, 11:16–19'},
+  {id:'reu', name:'르우', g:'홍수에서 아브라함까지', f:'peleg', era:'239세', why:'11장 족보', ref:'창 11:18–21'},
+  {id:'serug', name:'스룩', g:'홍수에서 아브라함까지', f:'reu', era:'230세', why:'11장 족보', ref:'창 11:20–23'},
+  {id:'nahor1', name:'나홀 (데라의 아버지)', g:'홍수에서 아브라함까지', f:'serug', era:'148세', why:'아브라함의 할아버지', ref:'창 11:22–25'},
+  {id:'terah', name:'데라', g:'홍수에서 아브라함까지', f:'nahor1', era:'205세', at:'하란', layer:'w1', why:'우르에서 하란으로 가족을 이끌고 간 아버지. 다른 신들을 섬겼음 (수 24:2)', ref:'창 11:24–32'},
+  {id:'nahor2', name:'나홀 (아브라함의 형제)', g:'아브라함 집안', f:'terah', s:['milcah'], at:'하란', layer:'w1', why:'뒤에 하란 쪽 "나홀의 성"에 자리 잡은 형제. 손녀가 리브가', ref:'창 11:27–29, 22:20–23, 24:10'},
+  {id:'haran', name:'하란 (사람)', g:'아브라함 집안', f:'terah', at:'우르', layer:'w1', why:'아브라함의 형제, 롯과 밀가의 아버지. 아버지 데라보다 먼저 우르에서 죽음', ref:'창 11:27–28'},
+  {id:'milcah', name:'밀가', g:'아브라함 집안', f:'haran', why:'하란의 딸, 나홀의 아내. 브두엘의 어머니', ref:'창 11:29, 22:20–23'},
+  {id:'bethuel', name:'브두엘', g:'아브라함 집안', f:'nahor2', m:'milcah', at:'하란', layer:'w1', why:'리브가와 라반의 아버지', ref:'창 22:22–23, 24:15'},
+  {id:'sarah', name:'사라', g:'아브라함 집안', s:['abraham'], era:'127세', at:'헤브론', layer:'w1', why:'아브라함의 아내, 90세에 이삭. 아브라함의 이복 누이이기도 함 (창 20:12)', ref:'창 17:15–19, 21:1–7, 23:1'},
+  {id:'hagar', name:'하갈', g:'아브라함 집안', at:'브엘세바', layer:'w1', why:'사라의 이집트 여종. 이스마엘의 어머니. 두 번 광야로', ref:'창 16장, 21:9–21'},
+  {id:'ishmael', name:'이스마엘', g:'아브라함 집안', f:'abraham', m:'hagar', era:'137세', why:'아브라함의 첫아들. 열두 족장의 아버지, 전통적으로 아랍 민족들의 조상', ref:'창 16:15, 17:20, 25:12–18'},
+  {id:'keturah', name:'그두라', g:'아브라함 집안', s:['abraham'], why:'사라 뒤의 아내. 여섯 아들 중 하나가 미디안', ref:'창 25:1–6'},
+  {id:'midian', name:'미디안', g:'아브라함 집안', f:'abraham', m:'keturah', at:'미디안', layer:'w1', why:'미디안 족속의 조상. 요셉을 이집트에 판 상인들, 모세의 장인 이드로가 이 족속', ref:'창 25:2, 37:28, 36, 출 2:15–16'},
+  {id:'moab', name:'모압', g:'아브라함 집안', f:'lot', at:'모압 산지', layer:'w1', why:'롯의 큰딸이 낳은 아들. 모압 족속. 룻이 모압 여인', ref:'창 19:37'},
+  {id:'ammon', name:'벤암미 (암몬)', g:'아브라함 집안', f:'lot', at:'모압 산지', layer:'w1', why:'롯의 작은딸이 낳은 아들. 암몬 족속', ref:'창 19:38'},
+  {id:'rebekah', name:'리브가', g:'아브라함 집안', f:'bethuel', s:['isaac'], why:'나홀의 성(하란 근처) 우물가에서 뽑힌 이삭의 아내. 야곱을 편애해 축복을 가로채게 함', ref:'창 24장, 27장'},
+  {id:'laban', name:'라반', g:'아브라함 집안', f:'bethuel', at:'하란', layer:'w1', why:'리브가의 오빠, 레아·라헬의 아버지. 야곱을 20년 부림', ref:'창 29–31장'},
+  {id:'leah', name:'레아', g:'아브라함 집안', f:'laban', s:['jacob'], why:'야곱의 첫 아내. 여섯 아들과 디나. 유다·레위의 어머니', ref:'창 29:16–35, 30:17–21, 49:31'},
+  {id:'rachel', name:'라헬', g:'아브라함 집안', f:'laban', s:['jacob'], at:'베들레헴', layer:'w1', why:'야곱이 사랑한 아내. 요셉·베냐민. 베들레헴 길에서 죽음', ref:'창 29:17–30, 30:22–24, 35:16–20'},
+  {id:'bilhah', name:'빌하', g:'아브라함 집안', s:['jacob'], why:'라헬의 여종. 단·납달리의 어머니', ref:'창 30:3–8'},
+  {id:'zilpah', name:'실바', g:'아브라함 집안', s:['jacob'], why:'레아의 여종. 갓·아셀의 어머니', ref:'창 30:9–13'},
+  {id:'reuben', name:'르우벤', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'맏아들. 요셉을 구하려 함. 장자권을 잃음', ref:'창 29:32, 37:21–22, 49:3–4'},
+  {id:'simeon', name:'시므온', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'세겜 사건의 주역. 이집트에서 인질로 잡힘', ref:'창 34:25, 42:24'},
+  {id:'levi', name:'레위', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'제사장 지파의 조상. 모세·아론의 증조할아버지', ref:'창 34:25, 출 6:16–20'},
+  {id:'judah', name:'유다', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'요셉을 팔자고 한 사람 → 베냐민 대신 남겠다고 한 사람. 다윗과 예수의 조상', ref:'창 37:26, 44:33, 49:8–12, 룻 4:18–22'},
+  {id:'dan', name:'단', g:'야곱의 열두 아들', f:'jacob', m:'bilhah', why:'단 지파. 삼손의 지파', ref:'창 30:6, 49:16–17'},
+  {id:'naphtali', name:'납달리', g:'야곱의 열두 아들', f:'jacob', m:'bilhah', why:'갈릴리 북쪽 지파', ref:'창 30:8, 49:21'},
+  {id:'gad', name:'갓', g:'야곱의 열두 아들', f:'jacob', m:'zilpah', why:'요단 동쪽에 땅을 받은 지파', ref:'창 30:11, 민 32'},
+  {id:'asher', name:'아셀', g:'야곱의 열두 아들', f:'jacob', m:'zilpah', why:'북쪽 해안 지파', ref:'창 30:13, 49:20'},
+  {id:'issachar', name:'잇사갈', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'이스르엘 골짜기의 지파', ref:'창 30:18, 49:14–15'},
+  {id:'zebulun', name:'스불론', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'갈릴리 지파', ref:'창 30:20, 49:13'},
+  {id:'dinah', name:'디나', g:'야곱의 열두 아들', f:'jacob', m:'leah', why:'야곱의 딸. 세겜 사건', ref:'창 30:21, 34장'},
+  {id:'benjamin', name:'베냐민', g:'야곱의 열두 아들', f:'jacob', m:'rachel', why:'막내. 어머니가 죽으며 낳음. 사울 왕과 바울의 지파', ref:'창 35:18, 43–45장, 삼상 9:1, 빌 3:5'},
+  {id:'asenath', name:'아스낫', g:'야곱의 열두 아들', s:['joseph'], at:'온', layer:'w1', why:'온의 제사장 보디베라의 딸, 요셉의 아내', ref:'창 41:45'},
+  {id:'manasseh', name:'므낫세', g:'야곱의 열두 아들', f:'joseph', m:'asenath', why:'요셉의 맏아들. 지파의 반은 요단 동쪽에 땅', ref:'창 41:51, 48장'},
+  {id:'ephraim', name:'에브라임', g:'야곱의 열두 아들', f:'joseph', m:'asenath', why:'둘째지만 야곱이 오른손으로 축복. 여호수아의 지파, 북이스라엘의 중심', ref:'창 41:52, 48:13–20'},
+  {id:'kohath', name:'고핫', g:'출애굽 세대', f:'levi', why:'레위의 아들. 모세의 할아버지', ref:'출 6:16–18'},
+  {id:'amram', name:'아므람', g:'출애굽 세대', f:'kohath', s:['jochebed'], why:'모세·아론·미리암의 아버지', ref:'출 6:18–20, 민 26:59'},
+  {id:'jochebed', name:'요게벳', g:'출애굽 세대', f:'levi', at:'고센', layer:'w2', why:'모세의 어머니. 갈대 상자', ref:'출 2:1–10, 6:20, 민 26:59'},
+  {id:'miriam', name:'미리암', g:'출애굽 세대', f:'amram', m:'jochebed', at:'가데스바네아', layer:'w2', why:'모세의 누나. 갈대 상자를 지켜봄, 홍해의 노래. 가데스에서 죽음', ref:'출 2:4–8, 15:20–21, 민 12장, 20:1'},
+  {id:'aaron', name:'아론', g:'출애굽 세대', f:'amram', m:'jochebed', s:['elisheba'], era:'123세', at:'호르산', layer:'w2', why:'모세의 형이자 대변인. 첫 대제사장. 금송아지. 호르산에서 죽음', ref:'출 4:14, 28:1, 32장, 민 20:22–29, 33:39'},
+  {id:'elisheba', name:'엘리세바', g:'출애굽 세대', why:'아론의 아내. 유다 지파 암미나답의 딸', ref:'출 6:23'},
+  {id:'nadab', name:'나답', g:'출애굽 세대', f:'aaron', m:'elisheba', why:'다른 불을 드리다 죽음', ref:'레 10:1–2'},
+  {id:'abihu', name:'아비후', g:'출애굽 세대', f:'aaron', m:'elisheba', why:'나답과 함께 죽음', ref:'레 10:1–2'},
+  {id:'eleazar', name:'엘르아살', g:'출애굽 세대', f:'aaron', m:'elisheba', why:'아론 뒤의 대제사장. 여호수아와 함께 땅 분배', ref:'민 20:25–28, 수 14:1'},
+  {id:'ithamar', name:'이다말', g:'출애굽 세대', f:'aaron', m:'elisheba', why:'아론의 넷째. 제사장 가문의 한 줄기', ref:'출 6:23, 민 4:28'},
+  {id:'phinehas', name:'비느하스', g:'출애굽 세대', f:'eleazar', why:'싯딤의 바알브올 사건 때 창을 든 제사장', ref:'민 25:7–13'},
+  {id:'jethro', name:'이드로 (르우엘)', g:'출애굽 세대', at:'미디안', layer:'w2', why:'미디안 제사장, 모세의 장인. 재판 제도를 조언', ref:'출 2:16–21, 18장'},
+  {id:'zipporah', name:'십보라', g:'출애굽 세대', f:'jethro', s:['moses'], why:'미디안 제사장의 딸, 모세의 아내', ref:'출 2:21, 4:24–26'},
+  {id:'gershom', name:'게르솜', g:'출애굽 세대', f:'moses', m:'zipporah', why:'모세의 맏아들. "나그네"라는 뜻', ref:'출 2:22, 18:3'},
+  {id:'eliezer', name:'엘리에셀 (모세의 아들)', g:'출애굽 세대', f:'moses', m:'zipporah', why:'모세의 둘째 아들', ref:'출 18:4'},
+  {id:'nun', name:'눈', g:'출애굽 세대', why:'여호수아의 아버지. 에브라임 지파', ref:'민 13:8, 대상 7:20–27'},
+  {id:'jephunneh', name:'여분네', g:'출애굽 세대', why:'갈렙의 아버지. 유다 지파 (그니스 사람)', ref:'민 13:6, 수 14:6'},
+];
+
 // ===== 렌더링 =====
 const PX=100,PY=117;
 const proj=([lon,lat])=>[(lon-20)*PX,(50-lat)*PY];
@@ -490,17 +754,18 @@ function scheduleLabels(){if(labT)cancelAnimationFrame(labT);labT=requestAnimati
 function placeLabels(){labT=null;
   const taken=[];const hit=(a,b)=>!(a.x+a.w<b.x||b.x+b.w<a.x||a.y+a.h<b.y||b.y+b.h<a.y);
   const nodes=[...L.places.querySelectorAll('.place')];
-  nodes.forEach(n=>{const sx=n.dataset.x/k,sy=n.dataset.y/k;taken.push({x:sx-6,y:sy-6,w:12,h:12});});
+  nodes.forEach(n=>{const sx=n.dataset.x/k,sy=n.dataset.y/k;const b=n.classList.contains('pm')?10:6;taken.push({x:sx-b,y:sy-b,w:2*b,h:2*b});});
   L.people.querySelectorAll('.person').forEach(n=>{const sx=n.dataset.x/k,sy=n.dataset.y/k;const r=n.querySelector('rect');taken.push({x:sx+9,y:sy+ +r.getAttribute('y'),w:+r.getAttribute('width'),h:18});});
   const order=['r','l','tr','tl','br','bl','t','b'];
   nodes.filter(n=>!n.classList.contains('via')).concat(nodes.filter(n=>n.classList.contains('via'))).forEach(n=>{
     const t=n.querySelector('.pl');let w=+n.dataset.w;if(!w){try{w=t.getComputedTextLength();}catch(e){w=t.textContent.length*11;}n.dataset.w=w;}
     const sx=n.dataset.x/k,sy=n.dataset.y/k;const pref=PLACES[n.dataset.n]?.lab;const cands=pref?[pref,...order.filter(o=>o!==pref)]:order;
     let chosen=null;
-    for(const c of cands){const [dx,dy,an]=LAB[c];const x=an==='start'?sx+dx:an==='end'?sx+dx-w:sx+dx-w/2;const r={x:x-1,y:sy+dy-11,w:w+2,h:13};
+    const TB=n.classList.contains('pm')?LABP:LAB;
+    for(const c of cands){const [dx,dy,an]=TB[c];const x=an==='start'?sx+dx:an==='end'?sx+dx-w:sx+dx-w/2;const r={x:x-1,y:sy+dy-11,w:w+2,h:13};
       if(!taken.some(o=>hit(r,o))){chosen={c,r};break;}}
-    if(!chosen){if(n.classList.contains('via')){t.style.display='none';return;}const [dx,dy,an]=LAB[cands[0]];chosen={c:cands[0],r:{x:an==='start'?sx+dx:an==='end'?sx+dx-w:sx+dx-w/2,y:sy+dy-11,w,h:13}};}
-    t.style.display='';const [dx,dy,an]=LAB[chosen.c];t.setAttribute('x',dx);t.setAttribute('y',dy);t.setAttribute('text-anchor',an);taken.push(chosen.r);});
+    if(!chosen){if(n.classList.contains('via')){t.style.display='none';return;}const [dx,dy,an]=TB[cands[0]];chosen={c:cands[0],r:{x:an==='start'?sx+dx:an==='end'?sx+dx-w:sx+dx-w/2,y:sy+dy-11,w,h:13}};}
+    t.style.display='';const [dx,dy,an]=TB[chosen.c];t.setAttribute('x',dx);t.setAttribute('y',dy);t.setAttribute('text-anchor',an);taken.push(chosen.r);});
 }
 function goTo(v,instant){
   if(anim)cancelAnimationFrame(anim);
@@ -515,17 +780,20 @@ function polyMid(P){let tot=0,segs=[];for(let i=1;i<P.length;i++){const d=Math.h
   let h=tot/2;for(let i=0;i<segs.length;i++){if(h<=segs[i]){const t=segs[i]?h/segs[i]:0;return[P[i][0]+(P[i+1][0]-P[i][0])*t,P[i][1]+(P[i+1][1]-P[i][1])*t];}h-=segs[i];}return P[0];}
 
 const LAB={r:[8,4,'start'],l:[-8,4,'end'],t:[0,-9,'middle'],b:[0,15,'middle'],tr:[7,-6,'start'],tl:[-7,-6,'end'],br:[7,13,'start'],bl:[-7,13,'end']};
+const LABP={r:[12,4,'start'],l:[-12,4,'end'],t:[0,-13,'middle'],b:[0,19,'middle'],tr:[10,-9,'start'],tl:[-10,-9,'end'],br:[10,16,'start'],bl:[-10,16,'end']};
 
-function render(i,instant){
-  cur=i;const s=SCENES[i];
-  // 지역
+function drawRegions(layer,extra){
   let rh='';
-  REGIONS.filter(r=>r.layer===s.layer||r.layer==='sea'||r.layer==='near').forEach(r=>{const [x,y]=proj(r.c);
+  REGIONS.filter(r=>r.layer===layer||r.layer==='sea'||r.layer==='near'||(extra&&r.layer===extra)).forEach(r=>{const [x,y]=proj(r.c);
     // 작은 나라는 확대했을 때만 (max = 보여줄 최대 뷰 너비, 단위 = 0.01도)
     const mx=r.max??(r.layer==='tribes'?700:r.rx===0||r.rx>=1.4?1e9:r.rx>=0.6?2200:1300);
     if(r.rx>0)rh+=`<ellipse class="rg ${r.layer}" data-max="${mx}" cx="${x}" cy="${y}" rx="${r.rx*PX}" ry="${r.ry*PY}" transform="rotate(${r.rot||0} ${x} ${y})"/>`;
     rh+=`<g class="pt rl ${r.layer}" data-max="${mx}" data-x="${x}" data-y="${y}" data-r="${(r.rx===0&&r.rot)?r.rot:0}"><text class="rt" text-anchor="middle">${esc(r.t)}</text>${r.sub?`<text class="rs" y="14" text-anchor="middle">${esc(r.sub)}</text>`:''}</g>`;});
   L.regions.innerHTML=rh;
+}
+function render(i,instant){
+  setMode('scene');cur=i;const s=SCENES[i];
+  drawRegions(s.layer,s.extra);
   // 경로
   let rt='';
   s.routes.forEach(r=>{const P=r.pts.map(n=>proj(PLACES[n].p));const d='M'+P.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' L');const c=`var(--c-${r.color})`;
@@ -564,22 +832,79 @@ function render(i,instant){
   hideTip();
   try{history.replaceState(null,'',`#${s.id}`);}catch(e){}
 }
-function buildList(w){const list=$('list');if(list.dataset.w==w)return;list.dataset.w=w;
+function buildList(w){const list=$('list');const key=mode==='person'?'P':'w'+w;if(list.dataset.w===key)return;list.dataset.w=key;
+  if(mode==='person'){list.innerHTML=PEOPLE.map((p,i)=>p.steps?`<li><button data-pid="${p.id}" aria-current="false"><span class="n"><i class="sw" style="background:var(--c-${p.color||'law'})"></i></span><span class="t">${esc(p.name)}</span><span class="r">${esc(p.era||'')}</span></button></li>`:'').join('');return;}
   list.innerHTML=SCENES.map((s,i)=>s.week===w?`<li><button data-i="${i}" aria-current="${i===cur}"><span class="n">${s.id.split('-')[1]}</span><span class="t">${esc(s.title)}</span><span class="r">${esc(s.ref)}</span></button></li>`:'').join('');}
+
+// ===== 인물별 =====
+let mode='scene',curP=-1;
+const PID={};PEOPLE.forEach((p,i)=>PID[p.id]=i);
+const byId=id=>PEOPLE[PID[id]];
+const kidsOf=id=>PEOPLE.filter(q=>q.f===id||q.m===id);
+const sibsOf=p=>PEOPLE.filter(q=>q!==p&&((p.f&&q.f===p.f)||(p.m&&q.m===p.m)));
+const spousesOf=p=>{const set=new Set(p.s||[]);PEOPLE.forEach(q=>{if((q.s||[]).includes(p.id))set.add(q.id);});return[...set].map(byId).filter(Boolean);};
+const lineage=p=>{const out=[];let c=p,g=0;while(c&&g++<60){out.unshift(c);c=c.f?byId(c.f):null;}return out;};
+const chip=q=>`<button class="pc" data-pid="${q.id}">${esc(q.name)}</button>`;
+const MAINS=PEOPLE.filter(p=>p.steps);
+function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m?'true':'false'));$('tabs').hidden=m==='person';$('pfind').hidden=m!=='person';$('mprev').textContent=m==='person'?'‹ 이전 인물':'‹ 이전 장면';$('mnext').textContent=m==='person'?'다음 인물 ›':'다음 장면 ›';}
+function fitPoints(pts){let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;pts.forEach(([x,y])=>{x1=Math.min(x1,x);y1=Math.min(y1,y);x2=Math.max(x2,x);y2=Math.max(y2,y);});
+  let w=Math.max(x2-x1,220),h=Math.max(y2-y1,220);const cx=(x1+x2)/2,cy=(y1+y2)/2;w*=1.4;h*=1.4;return{x:cx-w/2,y:cy-h/2,w,h};}
+function renderPerson(j,instant){
+  setMode('person');curP=j;const p=PEOPLE[j];const C=`var(--c-${p.color||'law'})`;
+  drawRegions(p.layer||'w1',p.extra);
+  let rt='',ph='';const uniq=new Map();
+  if(p.steps){const P=p.steps.map(st=>proj(PLACES[st.at].p));
+    for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(a[0]===b[0]&&a[1]===b[1])continue;
+      rt+=`<path class="route ${p.steps[i].est?'dashed':'solid'}" d="M${a[0].toFixed(1)},${a[1].toFixed(1)} L${b[0].toFixed(1)},${b[1].toFixed(1)}" stroke="${C}"/>`;
+      const ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;rt+=`<g class="pt arrow" data-x="${b[0]}" data-y="${b[1]}" data-r="${ang.toFixed(1)}"><path d="M-7,0 L-16,-4.5 L-13,0 L-16,4.5Z" fill="${C}"/></g>`;}
+    p.steps.forEach((st,i)=>{if(!uniq.has(st.at))uniq.set(st.at,[]);uniq.get(st.at).push(i+1);});}
+  else if(p.at){uniq.set(p.at,[]);}
+  uniq.forEach((nums,n)=>{const pl=PLACES[n];const [x,y]=proj(pl.p);const pos=LABP[pl.lab||'r'];
+    ph+=`<g class="pt place pm" style="--pc:${C}" data-x="${x}" data-y="${y}" data-n="${esc(n)}" tabindex="0"><circle class="halo" r="15"/><circle class="dot" r="${nums.length?8:6}"/>${nums.length?`<text class="num" style="font-size:${nums.length>1?'7.5px':'9.5px'}">${nums.length>3?nums[0]+'…':nums.join('·')}</text>`:''}<text class="pl" x="${pos[0]}" y="${pos[1]}" text-anchor="${pos[2]}">${esc(n)}</text></g>`;});
+  L.routes.innerHTML=rt;L.places.innerHTML=ph;L.people.innerHTML='';
+  if(uniq.size){sceneV=fitPoints([...uniq.keys()].map(n=>proj(PLACES[n].p)));goTo(sceneV,instant);$('refit').hidden=true;}
+  else{rescale();}
+  if(!reduced&&!instant){L.routes.querySelectorAll('.route.solid').forEach((q,i)=>{const len=q.getTotalLength();q.style.strokeDasharray=`${len} ${len}`;q.style.strokeDashoffset=len;q.getBoundingClientRect();q.style.transition=`stroke-dashoffset .5s ease ${.3+i*.12}s`;q.style.strokeDashoffset=0;q.addEventListener('transitionend',()=>{q.style.strokeDasharray='';q.style.transition='';},{once:true});});}
+  // 패널: 왜 나오나 · 족보 · 여정
+  const fam=[];const F=p.f&&byId(p.f),M=p.m&&byId(p.m);
+  if(F)fam.push(['아버지',[F]]);if(M)fam.push(['어머니',[M]]);const sp=spousesOf(p);if(sp.length)fam.push(['배우자',sp]);
+  const ch=kidsOf(p.id);if(ch.length)fam.push(['자녀',ch]);const sb=sibsOf(p);if(sb.length)fam.push(['형제',sb]);
+  const line=lineage(p);
+  $('info').innerHTML=`<span class="era">${esc(p.era||p.g||'')}</span><h2>${esc(p.name)}</h2>`+(p.why?`<p class="why">${esc(p.why)}</p>`:'')+(p.ref?`<p class="ref">${esc(p.ref)}</p>`:'')+(p.note?`<p class="note">${esc(p.note)}</p>`:'')
+    +(line.length>1?`<div class="lineage">${line.map(q=>q===p?`<span class="pc cur">${esc(q.name)}</span>`:chip(q)).join('<span class="sep">›</span>')}</div>`:'')
+    +(fam.length?`<dl class="fam">${fam.map(([kk,v])=>`<dt>${kk}</dt><dd>${v.map(chip).join('')}</dd>`).join('')}</dl>`:'')
+    +(p.steps?`<ol class="steps">${p.steps.map((st,i)=>`<li><span class="at" data-at="${esc(st.at)}" tabindex="0">${i+1}. ${esc(st.at)}</span><span>${esc(st.t)}<span class="rf">${esc(st.ref)}</span>${st.est?' <span class="est">추정</span>':''}</span></li>`).join('')}</ol>`:'');
+  $('hTitle').textContent=p.name;$('hRef').textContent=p.steps?`여정 ${p.steps.length}단계`:(p.g||'');$('hEra').textContent=p.era||'';
+  const mi=MAINS.indexOf(p);$('mpos').textContent=mi>=0?`인물 ${mi+1}/${MAINS.length}`:'족보';$('mprev').disabled=false;$('mnext').disabled=false;
+  buildList();document.querySelectorAll('#list button').forEach(b=>b.setAttribute('aria-current',b.dataset.pid===p.id?'true':'false'));
+  const cb=document.querySelector(`#list button[data-pid="${p.id}"]`);if(cb)cb.scrollIntoView({block:'nearest',inline:'nearest'});
+  $('pall').value=p.id;$('info').scrollTop=0;
+  hideTip();try{history.replaceState(null,'',`#p-${p.id}`);}catch(e){}
+}
+function stepPerson(d){const p=PEOPLE[curP];let mi=MAINS.indexOf(p);if(mi<0)mi=d>0?-1:0;mi=Math.max(0,Math.min(MAINS.length-1,mi+d));renderPerson(PID[MAINS[mi].id]);}
+function go(d){if(mode==='person')stepPerson(d);else render(Math.max(0,Math.min(SCENES.length-1,cur+d)));}
+// 인물 찾기 드롭다운
+{const groups=[];PEOPLE.forEach(p=>{const g=p.g||'주요 인물';if(!groups.includes(g))groups.push(g);});
+ $('pall').innerHTML=`<option value="">인물 찾기 (족보 전체)…</option>`+groups.map(g=>`<optgroup label="${esc(g)}">${PEOPLE.filter(p=>(p.g||'주요 인물')===g).map(p=>`<option value="${p.id}">${esc(p.name)}${p.steps?' ·여정':''}</option>`).join('')}</optgroup>`).join('');
+ $('pall').addEventListener('change',e=>{if(e.target.value)renderPerson(PID[e.target.value]);});}
+$('mode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.m==='person')renderPerson(curP>=0?curP:PID['abraham']);else render(cur>=0?cur:0);});
+L.people.addEventListener('click',e=>{const g=e.target.closest('.person');if(!g)return;const nm=g.querySelector('text').textContent;const q=PEOPLE.find(p=>p.name===nm)||PEOPLE.find(p=>nm.includes(p.name));if(q){e.stopPropagation();renderPerson(PID[q.id]);}});
 $('tabs').innerHTML=Object.entries(WEEKS).map(([w,t])=>`<button role="tab" data-w="${w}" aria-selected="false">${w}주<b>${t}</b></button>`).join('');
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=SCENES.findIndex(s=>s.week===+b.dataset.w);if(i>=0)render(i);});
-$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(b)render(+b.dataset.i);});
-$('prev').addEventListener('click',()=>render(Math.max(0,cur-1)));
-$('next').addEventListener('click',()=>render(Math.min(SCENES.length-1,cur+1)));
-$('mprev').addEventListener('click',()=>render(Math.max(0,cur-1)));
-$('mnext').addEventListener('click',()=>render(Math.min(SCENES.length-1,cur+1)));
-document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){render(Math.min(SCENES.length-1,cur+1));}else if(e.key==='ArrowLeft'){render(Math.max(0,cur-1));}else if(e.key==='Escape'){hideTip();}});
+$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pid)renderPerson(PID[b.dataset.pid]);else render(+b.dataset.i);});
+$('prev').addEventListener('click',()=>go(-1));
+$('next').addEventListener('click',()=>go(1));
+$('mprev').addEventListener('click',()=>go(-1));
+$('mnext').addEventListener('click',()=>go(1));
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){go(1);}else if(e.key==='ArrowLeft'){go(-1);}else if(e.key==='Escape'){hideTip();}});
 $('refit').addEventListener('click',()=>{goTo(sceneV);$('refit').hidden=true;});
-$('info').addEventListener('click',e=>{const a=e.target.closest('.at');if(!a)return;const el=L.places.querySelector(`.place[data-n="${CSS.escape(a.dataset.at)}"]`);if(!el)return;el.classList.remove('pulse');void el.getBoundingClientRect();el.classList.add('pulse');const r=el.getBoundingClientRect();showTip(a.dataset.at,r.left+r.width/2,r.top);setTimeout(()=>{if(!pinned)hideTip();},2200);});
+$('info').addEventListener('click',e=>{const pc=e.target.closest('.pc[data-pid]');if(pc){renderPerson(PID[pc.dataset.pid]);return;}const a=e.target.closest('.at');if(!a)return;const el=L.places.querySelector(`.place[data-n="${CSS.escape(a.dataset.at)}"]`);if(!el)return;el.classList.remove('pulse');void el.getBoundingClientRect();el.classList.add('pulse');const r=el.getBoundingClientRect();showTip(a.dataset.at,r.left+r.width/2,r.top);setTimeout(()=>{if(!pinned)hideTip();},2200);});
 
 // 툴팁
 const tip=$('tip');let pinned=false;
-function showTip(n,px,py){const pl=PLACES[n];if(!pl)return;const s=SCENES[cur];const ev=s.events.filter(e=>e.at===n);
+function showTip(n,px,py){const pl=PLACES[n];if(!pl)return;let ev;
+  if(mode==='person'){const p=PEOPLE[curP];ev=(p.steps||[]).map((st,i)=>({t:`${i+1}. ${st.t}`,ref:st.ref})).filter((_,i)=>p.steps[i].at===n);}
+  else{const s=SCENES[cur];ev=s.events.filter(e=>e.at===n);}
   tip.innerHTML=`<b>${esc(n)}</b><div class="nt">${esc(pl.note||'')}</div>${ev.length?`<ul>${ev.map(e=>`<li>${esc(e.t)}<span class="rf">${esc(e.ref)}</span></li>`).join('')}</ul>`:''}`;
   tip.hidden=false;const r=tip.getBoundingClientRect();let x=px+14,y=py+14;
   if(x+r.width>innerWidth-8)x=px-r.width-14;if(x<8)x=8;if(y+r.height>innerHeight-8)y=py-r.height-14;if(y<8)y=8;
@@ -618,10 +943,12 @@ svg.addEventListener('wheel',e=>{e.preventDefault();const r=rect();const f=Math.
   const nw=Math.min(6000,Math.max(60,V.w*f)),ff=nw/V.w;stopAnim();apply(viewAt(V.w*ff,V.h*ff,m,sx,sy,r));$('refit').hidden=false;},{passive:false});
 svg.addEventListener('dblclick',()=>{goTo(sceneV);$('refit').hidden=true;});
 addEventListener('resize',()=>apply(V));
-addEventListener('hashchange',()=>{const i=SCENES.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==cur)render(i);});
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(mode==='person'&&h===`p-${PEOPLE[curP]?.id}`)return;if(mode==='scene'&&h===SCENES[cur]?.id)return;openHash(false);});
 
 // 시작
-const h=(location.hash||'').slice(1);let start=SCENES.findIndex(s=>s.id===h);if(start<0)start=0;
-render(start,true);
+function openHash(instant){const h=(location.hash||'').slice(1);
+  if(h.startsWith('p-')&&PID[h.slice(2)]!==undefined){renderPerson(PID[h.slice(2)],instant);return true;}
+  const i=SCENES.findIndex(s=>s.id===h);if(i>=0){render(i,instant);return true;}return false;}
+if(!openHash(true))render(0,true);
 </script>
 </body></html>
