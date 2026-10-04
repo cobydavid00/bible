@@ -36,6 +36,17 @@ td.soon{color:var(--muted);font-size:13px}
 .tips b{color:var(--ink)}
 kbd{font-family:inherit;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--surface)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:760px){
+  .home{padding-inline:16px;padding-block:22px 40px;gap:20px}
+  h1{font-size:27px}
+  .lede{font-size:14px}
+  .card{min-height:0;padding:16px}
+  .card h2{font-size:18px}
+  .card .go{margin-top:4px}
+  th,td{padding:9px 10px}
+  td a{font-size:14px}
+  .tips{font-size:13px}
+}
 </style>
 <style>
 .snav{--navh:44px;height:var(--navh);display:flex;align-items:center;gap:2px;padding:0 12px;border-bottom:1px solid var(--line,#e3e2dc);background:var(--surface,#fff);font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:13px;overflow-x:auto;white-space:nowrap;box-sizing:border-box}

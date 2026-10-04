@@ -35,8 +35,9 @@ html,body{height:100%}
 :root{--navh:44px}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5}
 *{box-sizing:border-box}
-.app{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100% - var(--navh));min-height:0}
-.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--surface)}
+.app{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100% - var(--navh));min-height:0;width:100%;max-width:100%;overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line);background:var(--surface)}
+.list,.info,.tabs,.head{min-width:0;max-width:100%}
 .head{padding:18px 18px 10px}
 h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spacing:-.01em}
 .lede{margin:4px 0 0;color:var(--ink-2);font-size:12.5px}
@@ -121,19 +122,42 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
 .person line{stroke:var(--ink);stroke-width:1}
 @media (prefers-reduced-motion: reduce){.place.pulse .ring,.place.pulse .dot{animation:none}}
 @media (max-width:760px){
-  .app{grid-template-columns:1fr;grid-template-rows:56vh minmax(0,1fr)}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:50vh minmax(0,1fr)}
+  @supports (height:1dvh){.app{grid-template-rows:50dvh minmax(0,1fr)}}
   .side{order:2;border-right:0;border-top:1px solid var(--line)}
   .mapwrap{order:1}
-  .head{padding:12px 16px 6px}
-  .list{display:flex;overflow-x:auto;padding:6px 10px;gap:4px;border-bottom:1px solid var(--line)}
-  .list li{flex:0 0 auto}
-  .list button{grid-template-columns:auto auto;white-space:nowrap;padding:6px 10px;background:var(--band)}
+  .head{display:none}
+  .tabs{padding:8px 10px 6px;gap:6px}
+  .tabs button{padding:6px 8px;font-size:12px}
+  .tabs button b{font-size:12.5px}
+  .list{display:flex;overflow-x:auto;padding:6px 10px;gap:6px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .list li{flex:0 0 auto;scroll-snap-align:center}
+  .list button{grid-template-columns:auto auto;white-space:nowrap;padding:8px 12px;background:var(--band);min-height:38px}
   .list .r{display:none}
   .list button[aria-current="true"]{background:var(--ink);color:var(--ground)}
   .list button[aria-current="true"] .n{color:var(--ground);opacity:.7}
+  .info{padding:12px 16px 90px}
+  .info h2{font-size:18px}
+  .info p.note{font-size:14.5px;line-height:1.6}
+  .evs li{font-size:13px}
+  .legend{display:none}
   .hud.keys{display:none}
+  .hud.top{padding:3px 8px;gap:4px}
+  .hud.top button{display:none}
+  .hud-title b{font-size:13px}
   .hud-title span{display:none}
+  .hud.eraChip{top:auto;bottom:10px;left:10px;right:auto;font-size:11px;padding:4px 9px}
+  .hud.refit{bottom:10px;right:10px;padding:6px 9px;font-size:12px}
+  .mnav{display:flex}
 }
+/* 모바일 하단 이전/다음 바 (큰 손가락용) */
+.mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:5;gap:8px;align-items:center;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
+.mnav button{flex:1;border:1px solid var(--line);background:var(--band);color:var(--ink);border-radius:10px;padding:12px 10px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;min-height:46px}
+.mnav button:disabled{opacity:.4}
+.mnav .pos{flex:0 0 auto;min-width:4.5em;text-align:center;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+.place .pl{font-size:12px}
+@media (pointer:coarse){.place .dot{r:4.5}.place .halo{r:16}.place .pl{font-size:12.5px}.person text{font-size:11.5px}}
+@media (max-width:760px){.mnav{display:flex}}
 </style>
 
 <style>
@@ -176,6 +200,7 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
     <div class="hud keys">← → 장면 이동 · 드래그로 옮기기 · 휠로 확대</div>
   </main>
 </div>
+<div class="mnav" id="mnav"><button id="mprev">‹ 이전 장면</button><span class="pos" id="mpos"></span><button id="mnext">다음 장면 ›</button></div>
 <div class="tip" id="tip" hidden></div>
 
 <script>
@@ -529,6 +554,7 @@ function render(i,instant){
     p.addEventListener('transitionend',()=>{p.style.strokeDasharray='';p.style.transition='';},{once:true});});}
   // 패널
   $('hTitle').textContent=s.title;$('hRef').textContent=s.ref;$('hEra').textContent=s.era;
+  {const wk=SCENES.filter(x=>x.week===s.week);const j=wk.indexOf(s);$('mpos').textContent=`${s.week}주 ${j+1}/${wk.length}`;$('mprev').disabled=i===0;$('mnext').disabled=i===SCENES.length-1;}
   $('info').innerHTML=`<span class="era">${esc(s.era)}</span><h2>${esc(s.title)}</h2><p class="ref">${esc(s.ref)}</p><p class="note">${esc(s.note)}</p>`+
     (s.events.length?`<ul class="evs">${s.events.map(e=>`<li><span class="at" data-at="${esc(e.at)}" tabindex="0">${esc(PLACES[e.at]?.short||e.at)}</span><span>${esc(e.t)}<span class="rf">${esc(e.ref)}</span></span></li>`).join('')}</ul>`:'');
   document.querySelectorAll('#list button').forEach(b=>b.setAttribute('aria-current',+b.dataset.i===i?'true':'false'));
@@ -545,6 +571,8 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
 $('list').addEventListener('click',e=>{const b=e.target.closest('button');if(b)render(+b.dataset.i);});
 $('prev').addEventListener('click',()=>render(Math.max(0,cur-1)));
 $('next').addEventListener('click',()=>render(Math.min(SCENES.length-1,cur+1)));
+$('mprev').addEventListener('click',()=>render(Math.max(0,cur-1)));
+$('mnext').addEventListener('click',()=>render(Math.min(SCENES.length-1,cur+1)));
 document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){render(Math.min(SCENES.length-1,cur+1));}else if(e.key==='ArrowLeft'){render(Math.max(0,cur-1));}else if(e.key==='Escape'){hideTip();}});
 $('refit').addEventListener('click',()=>{goTo(sceneV);$('refit').hidden=true;});
 $('info').addEventListener('click',e=>{const a=e.target.closest('.at');if(!a)return;const el=L.places.querySelector(`.place[data-n="${CSS.escape(a.dataset.at)}"]`);if(!el)return;el.classList.remove('pulse');void el.getBoundingClientRect();el.classList.add('pulse');const r=el.getBoundingClientRect();showTip(a.dataset.at,r.left+r.width/2,r.top);setTimeout(()=>{if(!pinned)hideTip();},2200);});
@@ -563,19 +591,31 @@ svg.addEventListener('click',e=>{const t=e.target.closest('.place');if(!t){if(pi
 L.places.addEventListener('focusin',e=>{const t=e.target.closest('.place');if(t){const r=t.getBoundingClientRect();showTip(t.dataset.n,r.left+r.width/2,r.top);}});
 L.places.addEventListener('focusout',()=>{if(!pinned)hideTip();});
 
-// 드래그·휠
-let drag=null,dragged=false;
-svg.addEventListener('pointerdown',e=>{if(e.button!==0&&e.pointerType==='mouse')return;drag={x:e.clientX,y:e.clientY,v:{...V}};dragged=false;svg.setPointerCapture(e.pointerId);svg.classList.add('drag');});
-svg.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)dragged=true;if(!dragged)return;if(anim){cancelAnimationFrame(anim);anim=null;}apply({...drag.v,x:drag.v.x-dx*k,y:drag.v.y-dy*k});$('refit').hidden=false;});
-const endDrag=()=>{drag=null;svg.classList.remove('drag');};
-svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
-svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect();const f=Math.exp(e.deltaY*0.0014);
-  // 지도 중앙 정렬(meet) 보정: 실제 보이는 영역의 원점
-  const vw=r.width*k,vh=r.height*k,ox=V.x-(vw-V.w)/2,oy=V.y-(vh-V.h)/2;
-  const mx=ox+(e.clientX-r.left)*k,my=oy+(e.clientY-r.top)*k;
-  const nw=Math.min(6000,Math.max(60,V.w*f)),ff=nw/V.w;
-  if(anim){cancelAnimationFrame(anim);anim=null;}
-  apply({x:mx-(mx-V.x)*ff,y:my-(my-V.y)*ff,w:V.w*ff,h:V.h*ff});$('refit').hidden=false;},{passive:false});
+// 드래그·휠·두 손가락 확대
+function rect(){return svg.getBoundingClientRect();}
+function kOf(v,r){return Math.max(v.w/Math.max(1,r.width),v.h/Math.max(1,r.height));}
+// 화면 좌표(svg 기준 px) → 지도 좌표
+function toMap(sx,sy,v,r){const kk=kOf(v,r);return[v.x-(r.width*kk-v.w)/2+sx*kk,v.y-(r.height*kk-v.h)/2+sy*kk];}
+// 지도의 점 m 이 화면의 s 에 오도록 하는 w×h 뷰
+function viewAt(w,h,m,sx,sy,r){const kk=Math.max(w/Math.max(1,r.width),h/Math.max(1,r.height));return{x:m[0]-sx*kk+(r.width*kk-w)/2,y:m[1]-sy*kk+(r.height*kk-h)/2,w,h};}
+const ptrs=new Map();let drag=null,dragged=false,pinch=null;
+function stopAnim(){if(anim){cancelAnimationFrame(anim);anim=null;}}
+svg.addEventListener('pointerdown',e=>{if(e.button!==0&&e.pointerType==='mouse')return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});svg.setPointerCapture(e.pointerId);
+  if(ptrs.size===2){const [p,q]=[...ptrs.values()];const r=rect();const mx=(p.x+q.x)/2-r.left,my=(p.y+q.y)/2-r.top;
+    pinch={d:Math.hypot(p.x-q.x,p.y-q.y),m:toMap(mx,my,V,r),v:{...V}};drag=null;dragged=true;return;}
+  drag={x:e.clientX,y:e.clientY,v:{...V}};dragged=false;svg.classList.add('drag');});
+svg.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size>=2){const [p,q]=[...ptrs.values()];const r=rect();const d=Math.hypot(p.x-q.x,p.y-q.y)||1;
+    const f=Math.min(6000/pinch.v.w,Math.max(60/pinch.v.w,pinch.d/d));const mx=(p.x+q.x)/2-r.left,my=(p.y+q.y)/2-r.top;
+    stopAnim();apply(viewAt(pinch.v.w*f,pinch.v.h*f,pinch.m,mx,my,r));$('refit').hidden=false;return;}
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)dragged=true;if(!dragged)return;
+  stopAnim();apply({...drag.v,x:drag.v.x-dx*k,y:drag.v.y-dy*k});$('refit').hidden=false;});
+const endPtr=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;if(ptrs.size===0){drag=null;svg.classList.remove('drag');}else if(ptrs.size===1&&!pinch){const [p]=[...ptrs.values()];drag={x:p.x,y:p.y,v:{...V}};}};
+svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('wheel',e=>{e.preventDefault();const r=rect();const f=Math.exp(e.deltaY*0.0014);
+  const sx=e.clientX-r.left,sy=e.clientY-r.top;const m=toMap(sx,sy,V,r);
+  const nw=Math.min(6000,Math.max(60,V.w*f)),ff=nw/V.w;stopAnim();apply(viewAt(V.w*ff,V.h*ff,m,sx,sy,r));$('refit').hidden=false;},{passive:false});
 svg.addEventListener('dblclick',()=>{goTo(sceneV);$('refit').hidden=true;});
 addEventListener('resize',()=>apply(V));
 addEventListener('hashchange',()=>{const i=SCENES.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==cur)render(i);});

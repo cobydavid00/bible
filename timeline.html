@@ -57,6 +57,20 @@ th{color:var(--muted);font-weight:500;font-size:12px}
 td.y{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink-2)}
 tr.wkr td{background:var(--band);font-weight:600}
 :focus-visible{outline:2px solid var(--c-law);outline-offset:2px}
+.swipe{display:none;margin:-10px 0 0;font-size:12px;color:var(--muted)}
+@media (max-width:760px){
+  .wrap{padding-inline:14px;padding-block:18px 40px;gap:14px}
+  h1{font-size:24px}
+  .lede{font-size:13.5px}
+  .legend{font-size:12px;gap:6px 12px}
+  .key{font-size:11.5px;gap:4px 12px}
+  .names{flex:0 0 92px;width:92px}
+  .nrow{font-size:12.5px;padding-left:8px}
+  .wk{font-size:11.5px;padding-left:8px}
+  .swipe{display:block}
+  .note{font-size:12px}
+  .tip{max-width:min(300px,calc(100vw - 16px))}
+}
 </style>
 
 <style>
@@ -84,6 +98,7 @@ tr.wkr td{background:var(--band);font-weight:600}
     <div class="names" id="names"></div>
     <div class="scroller" id="scroller"></div>
   </div>
+  <p class="swipe">연대표는 옆으로 밀어서 보세요 →. 책 이름이나 막대를 누르면 카드가 떠요.</p>
   <p class="note">연도는 전통적(보수적) 연대 기준의 대략치예요. 출애굽은 BC 1446년 설을 따랐고, BC 13세기로 보는 설도 있어요. 말라기와 예수님 탄생 사이의 약 400년은 성경 기록이 없는 기간이라 그래프에서 좁게 줄였어요. 열왕기·역대기는 4주에 한 번 소개하고, 그 이야기는 5주까지 이어져요. 선지자들은 그들이 활동한 왕의 이야기 속에서 함께 소개해요.</p>
   <details>
     <summary>표로 보기 (66권 전체)</summary>
