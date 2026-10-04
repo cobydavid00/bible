@@ -1,0 +1,104 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>성경 8주 개관</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* 홈: 네 가지 도구로 가는 문. 카드 네 장 + 8주 표 */
+:root{--ground:#f7f7f4;--surface:#fff;--ink:#1c1c1a;--ink-2:#55544e;--muted:#8a8981;--line:#e3e2dc;--band:#efeee9;--hover:#f0f4fb;--accent:#2a78d6;
+  --c-law:#2a78d6;--c-hist:#e5602c;--c-poet:#179c6c;--c-proph:#b57a00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ground:#141413;--surface:#1b1b1a;--ink:#f1f0eb;--ink-2:#bdbcb3;--muted:#8c8b83;--line:#2f2f2c;--band:#212120;--hover:#1f2633;--accent:#4a92ea;
+  --c-law:#4a92ea;--c-hist:#f07a4a;--c-poet:#2fb784;--c-proph:#dba53a;color-scheme:dark}}
+:root[data-theme="dark"]{--ground:#141413;--surface:#1b1b1a;--ink:#f1f0eb;--ink-2:#bdbcb3;--muted:#8c8b83;--line:#2f2f2c;--band:#212120;--hover:#1f2633;--accent:#4a92ea;
+  --c-law:#4a92ea;--c-hist:#f07a4a;--c-poet:#2fb784;--c-proph:#dba53a;color-scheme:dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6}
+*{box-sizing:border-box}
+.home{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:36px 64px;display:flex;flex-direction:column;gap:28px}
+h1{font-family:"Gowun Batang",serif;font-weight:700;font-size:34px;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.lede{margin:8px 0 0;color:var(--ink-2);max-width:62ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;color:inherit;text-decoration:none;min-height:150px;border-top:4px solid var(--c)}
+.card:hover{background:var(--hover)}
+.card h2{font-family:"Gowun Batang",serif;font-size:19px;margin:0}
+.card p{margin:0;color:var(--ink-2);font-size:13.5px}
+.card .go{margin-top:auto;color:var(--accent);font-weight:600;font-size:13px}
+h3{font-family:"Gowun Batang",serif;font-size:18px;margin:0 0 10px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:500;font-size:12.5px;background:var(--band)}
+tr:last-child td{border-bottom:0}
+td.n{font-family:"Gowun Batang",serif;font-weight:700;width:3em;font-variant-numeric:tabular-nums}
+td.c{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+td a{color:var(--accent);text-decoration:none;font-size:13px;margin-right:8px;white-space:nowrap}
+td a:hover{text-decoration:underline}
+td.soon{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+.tips{font-size:13px;color:var(--ink-2);background:var(--band);border-radius:10px;padding:12px 16px;margin:0}
+.tips b{color:var(--ink)}
+kbd{font-family:inherit;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--surface)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+<style>
+.snav{--navh:44px;height:var(--navh);display:flex;align-items:center;gap:2px;padding:0 12px;border-bottom:1px solid var(--line,#e3e2dc);background:var(--surface,#fff);font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:13px;overflow-x:auto;white-space:nowrap;box-sizing:border-box}
+.snav a{color:var(--ink-2,#55544e);text-decoration:none;padding:6px 10px;border-radius:7px;flex:0 0 auto}
+.snav a:hover{background:var(--band,#efeee9);color:var(--ink,#1c1c1a)}
+.snav a[aria-current="page"]{background:var(--band,#efeee9);color:var(--ink,#1c1c1a);font-weight:600}
+.snav .brand{font-family:"Gowun Batang",serif;font-weight:700;font-size:14px;color:var(--ink,#1c1c1a);margin-right:6px}
+.snav .brand:hover{background:none}
+</style>
+<nav class="snav" aria-label="사이트 메뉴">
+  <a class="brand" href="index.html">성경 8주 개관</a>
+  <a href="map.html" data-page="map">지도</a>
+  <a href="timeline.html" data-page="timeline">연대표</a>
+  <a href="outline.html" data-page="outline">8주 흐름</a>
+  <a href="week1.html" data-page="week1">1주 대본</a>
+</nav>
+
+<div class="home">
+  <header>
+    <h1>성경 8주 개관</h1>
+    <p class="lede">친구들에게 8주 동안 매주 1시간씩, 성경 66권을 사건이 일어난 순서로 들려주기 위한 자료예요. 설교가 아니라 "무슨 일이 있었는지" 이야기해요.</p>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="map.html" style="--c:var(--c-hist)">
+      <h2>지도</h2>
+      <p>그때 누가 어디에 있었고, 어디로 움직였고, 무슨 일이 어디서 있었는지. 장면을 넘기며 봐요. 지금은 1·2주.</p>
+      <span class="go">열기 →</span>
+    </a>
+    <a class="card" href="timeline.html" style="--c:var(--c-law)">
+      <h2>연대표</h2>
+      <p>66권을 연도 축 위에 한 줄씩. 누가, 언제, 무슨 내용으로 썼는지 막대에 올리면 나와요.</p>
+      <span class="go">열기 →</span>
+    </a>
+    <a class="card" href="outline.html" style="--c:var(--c-poet)">
+      <h2>8주 흐름</h2>
+      <p>주마다 어떤 순서로 이야기할지, 어느 장을 짚을지, 책 소개 카드와 다음 주 예고까지.</p>
+      <span class="go">열기 →</span>
+    </a>
+    <a class="card" href="week1.html" style="--c:var(--c-proph)">
+      <h2>1주 대본</h2>
+      <p>처음부터 요셉까지. 그대로 읽어도 되는 50분 분량 이야기 대본. 지도 장면 신호가 들어 있어요.</p>
+      <span class="go">열기 →</span>
+    </a>
+  </div>
+
+  <section>
+    <h3>8주 구성</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>주</th><th>제목</th><th>권수</th><th>자료</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td>처음부터 요셉까지</td><td class="c">2</td><td><a href="map.html#w1-0">지도</a><a href="outline.html#1주-처음부터-요셉까지">흐름</a><a href="week1.html">대본</a></td></tr>
+        <tr><td class="n">2</td><td>이집트에서 가나안까지</td><td class="c">5</td><td><a href="map.html#w2-0">지도</a><a href="outline.html#2주-이집트에서-가나안까지">흐름</a></td></tr>
+        <tr><td class="n">3</td><td>사사에서 다윗까지</td><td class="c">5</td><td><a href="outline.html#3주-사사에서-다윗까지">흐름</a></td></tr>
+        <tr><td class="n">4</td><td>솔로몬, 두 나라, 북이스라엘의 멸망</td><td class="c">10</td><td><a href="outline.html#4주-솔로몬-두-나라-북이스라엘의-멸망">흐름</a></td></tr>
+        <tr><td class="n">5</td><td>남유다의 마지막 날들</td><td class="c">9</td><td><a href="outline.html#5주-남유다의-마지막-날들">흐름</a></td></tr>
+        <tr><td class="n">6</td><td>포로와 귀환</td><td class="c">8</td><td><a href="outline.html#6주-포로와-귀환">흐름</a></td></tr>
+        <tr><td class="n">7</td><td>예수님과 교회의 시작</td><td class="c">5</td><td><a href="outline.html#7주-예수님과-교회의-시작">흐름</a></td></tr>
+        <tr><td class="n">8</td><td>바울과 편지들</td><td class="c">22</td><td><a href="outline.html#8주-바울과-편지들">흐름</a></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <p class="tips"><b>발표할 때.</b> 지도는 <kbd>←</kbd> <kbd>→</kbd> 로 장면을 넘기고, 드래그와 휠로 움직여요. 대본의 <b>지도 ▶</b> 표시를 누르면 그 장면으로 바로 가요. 연대표는 책 이름에 마우스를 올리면 카드가 떠요.</p>
+</div>
+</body></html>
