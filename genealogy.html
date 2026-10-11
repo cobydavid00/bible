@@ -71,6 +71,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
 .mlg.t3 .ml{font-size:13px}
 .mlg.t4 .ml{font-size:12px;font-family:var(--ui);font-weight:500;fill:var(--ink-2)}
 .mlg.dim{opacity:.32}
+.mlg.fold .ml{font-family:var(--ui);font-size:12px;font-weight:600;fill:var(--ink-2)}
 .mlg.cur .ml{fill:var(--accent)}
 .far .nd text{opacity:0}
 .far .bd{display:none}
@@ -178,7 +179,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
   <div class="stage" id="stage">
     <svg id="tree" role="img" aria-label="성경 인물 가계도"><g id="g"></g></svg>
     <div class="search" role="search"><input id="q" type="search" placeholder="이름으로 찾기 (예: 요셉, 리브가)" autocomplete="off" aria-label="이름으로 찾기" aria-controls="qs"><ul id="qs" role="listbox" hidden></ul></div>
-    <div class="tools"><button id="mode" aria-pressed="false">가족만 보기</button><button id="fit" aria-label="전체 맞추기">맞추기</button><button id="zin" aria-label="확대">+</button><button id="zout" aria-label="축소">−</button></div>
+    <div class="tools"><button id="mode" aria-pressed="false">가족만 보기</button><button id="refold" hidden>다시 접기</button><button id="fit" aria-label="전체 맞추기">맞추기</button><button id="zin" aria-label="확대">+</button><button id="zout" aria-label="축소">−</button></div>
   </div>
   <aside class="side" id="side">
     <button class="handle" id="handle" aria-label="설명 펼치기"></button>
@@ -193,7 +194,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
         <li><svg width="34" height="20"><line x1="2" y1="10" x2="32" y2="10" stroke="var(--wire)" stroke-width="2"/><circle cx="17" cy="10" r="4" fill="var(--paper)" stroke="var(--wire)" stroke-width="1.6"/></svg>결혼한 사이</li>
         <li><svg width="34" height="22"><path d="M17 1 V8 M6 8 H28 M6 8 V20 M28 8 V20" fill="none" stroke="var(--wire)" stroke-width="1.6"/></svg>아래로 갈라진 선은 자녀</li>
         <li><svg width="34" height="22"><circle cx="17" cy="11" r="9" fill="var(--accent)"/><text x="17" y="15" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">+3</text></svg>아직 안 보이는 자녀 수예요. 누르면 펼쳐져요</li>
-        <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--band)" stroke="var(--node-line)" stroke-dasharray="3 3"/></svg>한 명씩만 이어지는 세대를 접어 둔 거예요. 누르면 펼쳐져요</li>
+        <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--band)" stroke="var(--node-line)" stroke-dasharray="3 3"/></svg>이름만 한 명씩 이어지는 세대를 접어 둔 거예요 (예: 셋 … 라멕 · 8대). 누르면 그 자리에서 펼쳐져요</li>
         <li><svg width="34" height="20"><rect x="1" y="2" width="32" height="16" rx="5" fill="none" stroke="var(--node-line)" stroke-dasharray="5 4"/></svg>같은 사람이 다른 자리에도 있다는 표시예요. 결혼해 간 사람이 태어난 집안 자리나, 두 번 결혼한 사람의 첫 결혼 자리(룻, 밧세바)에 있어요. 진짜 카드는 자녀를 낳은 배우자 옆에 있어요</li>
         <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--surface)" stroke="var(--node-line)" stroke-dasharray="3 3"/><text x="17" y="14" font-size="9" text-anchor="middle" fill="var(--ink-2)">↑</text></svg>성경이 지파나 조상만 알려 주는 사람이에요 (바울은 베냐민 지파). 누르면 그 조상에게로 가요</li>
         <li><svg width="34" height="20"><rect x="1" y="2" width="32" height="16" rx="5" fill="var(--node)" stroke="var(--node-line)"/><rect x="5" y="2" width="24" height="3" fill="var(--gold)"/></svg>이야기가 따라가는 줄기예요. 아담에서 아브라함, 유다, 다윗과 유다 왕들을 거쳐 예수님까지. 다윗 뒤로는 마태복음 1장 족보를 따라가고, 마태가 건너뛴 왕들 구간은 띠가 점선이에요. 모세에게 가는 레위 줄기도 금색이에요</li>
@@ -1491,11 +1492,16 @@ function compute(F){
   // 가려진 자녀 수
   Object.values(U).forEach(u=>{if(u.chain||u.alias){u.hid=0;return;}const shown=new Set(u.kids.map(kidId));u.tot=slotKids(u.id).length;u.hid=slotKids(u.id).filter(c=>!shown.has(c.id)).length;});
   // 외줄기 세대 접기
-  const comp=u=>!u.chain&&!u.alias&&u.parent&&!keep.has(u.id)&&u.sp.length===0&&u.asp.length===0&&u.kids.length===1&&!u.kids[0].chain&&!EXPK.has(u.id);
+  // 전체 보기에서는 이름만 이어지는 3대 이상(셋 … 라멕, 셈 … 나홀)만 접고, 왕·주요 인물은 접지 않음
+  const canFold=id=>{const p=byId[id];return !(TOP.has(id)||STORY.includes(id)||p.reign||p.nofold);};
+  const comp=u=>!u.chain&&!u.alias&&u.parent&&!(u.parent.chain&&u.parent.fixed)&&!keep.has(u.id)&&u.sp.length===0&&u.asp.length===0&&u.kids.length===1&&!u.kids[0].chain&&!EXPK.has(u.id)&&(!FULL||canFold(u.id));
+  const minRun=FULL?3:2;
   const fold=u=>{u.kids=u.kids.map(c=>{if(!comp(c))return c;const run=[];let x=c;while(x&&comp(x)){run.push(x);x=x.kids[0];}
-      if(run.length<2)return c;const ch={key:'c:'+run[0].id+'-'+run[run.length-1].id,chain:true,ids:run.map(r=>r.id),label:`⋯ ${run.length}대`,kids:[x],parent:u};x.parent=ch;return ch;});
+      if(run.length<minRun)return c;const ids=run.map(r=>r.id);
+      const label=FULL?`${nm(byId[ids[0]])} … ${nm(byId[ids[ids.length-1]])} · ${run.length}대`:`⋯ ${run.length}대`;
+      const ch={key:'c:'+ids[0]+'-'+ids[ids.length-1],chain:true,ids,label,kids:[x],parent:u};x.parent=ch;return ch;});
     u.kids.forEach(fold);};
-  if(!FULL)roots.forEach(fold);
+  roots.forEach(fold);
   return roots.sort((a,b)=>by(byId[a.id],byId[b.id]));
 }
 
@@ -1509,8 +1515,9 @@ function prep(u,F){if(u.grid)return;
   if(leaves.length>=6){const i0=u.kids.findIndex(isLeaf);const others=u.kids.filter(c=>!isLeaf(c));
     const blk={key:'g:'+u.key,grid:true,items:leaves,cols:Math.min(GCOLS,leaves.length),parent:u,kids:[]};
     others.splice(Math.min(i0,others.length),0,blk);u.kids=others;}}
+const chainW=u=>u.fixed?CHW:Math.max(CHW,Math.round(String(u.label||'').length*11.5+26));
 function measure(u){if(u.grid){u.rows=Math.ceil(u.items.length/u.cols);u.w=u.cols*NW+(u.cols-1)*GG;u.h=u.rows*NH+(u.rows-1)*GG;return;}
-  u.kids.forEach(measure);const ns=u.chain?0:(u.sp||[]).length+(u.asp||[]).length;u.uw=u.chain?CHW:(1+ns)*NW+ns*CG;
+  u.kids.forEach(measure);const ns=u.chain?0:(u.sp||[]).length+(u.asp||[]).length;u.uw=u.chain?chainW(u):(1+ns)*NW+ns*CG;
   u.kw=u.kids.reduce((s,c)=>s+c.w,0)+Math.max(0,u.kids.length-1)*SG;u.w=Math.max(u.uw,u.kw);}
 function emitUnit(u,x0,y,out){out[(u.alias?'a:':'p:')+u.id]={t:u.alias?'a':'p',id:u.id,x:x0,y,hid:u.hid};
   spKeys(u).forEach((s,i)=>{out[s.k]={t:s.t,id:s.id,x:x0+(i+1)*(NW+CG),y,hid:0};});}
@@ -1519,7 +1526,7 @@ function emitGrid(u,x,y,out){out[u.key]={t:'g',x:x-GG,y:y-GG,w:u.w+2*GG,h:u.h+2*
 function place(u,x,y,out){u.y=y;
   if(u.grid){u.x=x;emitGrid(u,x,y,out);return;}
   u.x=x+(u.w-u.uw)/2;
-  if(u.chain)out[u.key]={t:'c',x:u.x,y,label:u.label,ids:u.ids,fixed:!!u.fixed};
+  if(u.chain)out[u.key]={t:'c',x:u.x,y,w:u.uw,label:u.label,ids:u.ids,fixed:!!u.fixed};
   else emitUnit(u,u.x,y,out);
   const h=u.chain?CHH:NH;let cx=x+(u.w-u.kw)/2;
   u.kids.forEach(c=>{const gap=(u.chain||c.chain)?VGC:VG;place(c,cx,y+h+gap+(c.grid?GG:0),out);cx+=c.w+SG;});}
@@ -1540,13 +1547,16 @@ function layout(F){if(FULL)return layoutFull(F);
 // 줄기(아담 → … → 예수)의 세대마다 태어난 해가 있으니, 줄기에 이어지지 않는 집안도 같은 시대 줄에 세움
 const ROWH=NH+VG,RG=44,STUB=8;
 let TRUNK=[],ERA_Y=[],FX=[0,0],TX=new Map();
-function buildTrunk(){TRUNK=[];const ms=P.filter(p=>p.main&&p.b!=null).sort((a,b)=>b.b-a.b);if(!ms.length)return;
+function buildTrunk(roots){TRUNK=[];const ms=P.filter(p=>p.main&&p.b!=null).sort((a,b)=>b.b-a.b);if(!ms.length)return;
   const ch=[];let c=ms[0],g=0;while(c&&g++<400){ch.unshift(c);c=c.f&&byId[c.f]?byId[c.f]:(c.m&&byId[c.m]?byId[c.m]:null);}
-  TRUNK=ch.map((p,i)=>({y:born(p),r:i,id:p.id}));for(let i=1;i<TRUNK.length;i++)if(TRUNK[i].y<=TRUNK[i-1].y)TRUNK[i].y=TRUNK[i-1].y+1;}
+  const at={};const walk=(u,d)=>{if(u.grid){u.items.forEach(it=>{if(!it.alias)at[it.id]=d;});return;}
+    if(u.chain)(u.ids||[]).forEach(i=>{at[i]=d;});else if(!u.alias)at[u.id]=d;u.kids.forEach(k=>walk(k,d+1));};
+  (roots||[]).forEach(r=>walk(r,0));
+  TRUNK=ch.filter(p=>at[p.id]!=null).map(p=>({y:born(p),r:at[p.id],id:p.id}));for(let i=1;i<TRUNK.length;i++)if(TRUNK[i].y<=TRUNK[i-1].y)TRUNK[i].y=TRUNK[i-1].y+1;}
 function estRow(y){const T=TRUNK;if(!T.length)return 0;if(y<=T[0].y)return 0;
-  for(let i=1;i<T.length;i++)if(y<T[i].y){const a=T[i-1],b=T[i];return a.r+(y-a.y)/(b.y-a.y);}
+  for(let i=1;i<T.length;i++)if(y<T[i].y){const a=T[i-1],b=T[i];return a.r+(y-a.y)/(b.y-a.y)*(b.r-a.r);}
   const L=T[T.length-1];return L.r+(y-L.y)/28;}
-function assignRows(u,r,all){u.row=r;
+function assignRows(u,r,all){u.row=r;if(u.chain&&!u.fixed)u.rowEnd=r;
   if(u.grid){u.span=Math.max(1,Math.ceil((u.h+GG)/ROWH));return;}
   const keep=[];
   u.kids.forEach(c=>{
@@ -1558,7 +1568,7 @@ function assignRows(u,r,all){u.row=r;
 function mergeInto(M,C,o){C.forEach((lr,r)=>{const v=[lr[0]+o,lr[1]+o],m=M.get(r);M.set(r,m?[Math.min(m[0],v[0]),Math.max(m[1],v[1])]:v);});}
 function contourOf(u){const own=new Map();
   if(u.grid){for(let i=0;i<u.span;i++)own.set(u.row+i,[-u.w/2,u.w/2]);return own;}
-  if(u.chain){for(let r=u.row;r<=u.rowEnd;r++)own.set(r,[-CHW/2,CHW/2]);}
+  if(u.chain){for(let r=u.row;r<=u.rowEnd;r++)own.set(r,[-u.uw/2,u.uw/2]);}
   else{own.set(u.row,[-u.uw/2,u.uw/2]);if(u.stub){const oc=-u.uw/2+NW/2;own.set(u.row-1,[oc-CHW/2,oc+CHW/2]);}}
   u.offs=[];if(!u.kids.length)return own;
   let M=null;const offs=[];
@@ -1569,7 +1579,9 @@ function contourOf(u){const own=new Map();
   const mid=(offs[0]+offs[offs.length-1])/2;u.offs=offs.map(o=>o-mid);
   mergeInto(own,M,-mid);return own;}
 function setX(u,x){u.cx=x;u.kids.forEach((c,i)=>setX(c,x+u.offs[i]));}
-function layoutFull(F){const roots=compute(F);roots.forEach(r=>prep(r,F));roots.forEach(measure);buildTrunk();
+function shiftRows(u,d){if(!d)return;u.row+=d;if(u.rowEnd!=null)u.rowEnd+=d;u.kids.forEach(c=>shiftRows(c,d));}
+const shiftC=(C,d)=>{if(!d)return C;const M=new Map();C.forEach((v,r)=>M.set(r+d,v));return M;};
+function layoutFull(F){const roots=compute(F);roots.forEach(r=>prep(r,F));roots.forEach(measure);buildTrunk(roots);
   const all=[];roots.forEach(u=>{u.row0=Math.max(0,Math.round(estRow(born(byId[u.id]))));all.push(u);});
   for(let i=0;i<all.length;i++)assignRows(all[i],all[i].row0,all);
   const size=u=>{let n=1;(u.kids||[]).forEach(c=>n+=size(c));return n;};
@@ -1579,14 +1591,19 @@ function layoutFull(F){const roots=compute(F);roots.forEach(r=>prep(r,F));roots.
   const noteTrunk=u=>{if(!u.chain&&!u.grid&&!u.alias&&trunkIds.has(u.id))TX.set(u.row,u.cx);u.kids.forEach(noteTrunk);};
   const txAt=r=>{if(TX.has(r))return TX.get(r);let best=null,bd=1e9;TX.forEach((x,rr)=>{if(Math.abs(rr-r)<bd){bd=Math.abs(rr-r);best=x;}});return best??0;};
   const FM=new Map();
-  order.forEach((u,i)=>{const C=contourOf(u);let x=0;
-    if(i>0){let oR=-Infinity,oL=Infinity;C.forEach((lr,r)=>{const m=FM.get(r);if(m){oR=Math.max(oR,m[1]+RG-lr[0]);oL=Math.min(oL,m[0]-RG-lr[1]);}});
-      const tx=txAt(u.row);x=oR===-Infinity?tx:(Math.abs(oR-tx)<=Math.abs(oL-tx)?oR:oL);}
+  const ROWCOST=240;
+  order.forEach((u,i)=>{let C=contourOf(u);let x=0;
+    if(i>0){let best=null;
+      for(const d of [0,1,-1,2,-2]){if(u.row+d<1)continue;const Cd=shiftC(C,d);let oR=-Infinity,oL=Infinity;
+        Cd.forEach((lr,r)=>{const m=FM.get(r);if(m){oR=Math.max(oR,m[1]+RG-lr[0]);oL=Math.min(oL,m[0]-RG-lr[1]);}});
+        const tx=txAt(u.row+d);const xx=oR===-Infinity?tx:(Math.abs(oR-tx)<=Math.abs(oL-tx)?oR:oL);const cost=Math.abs(xx-tx)+ROWCOST*Math.abs(d);
+        if(!best||cost<best.cost)best={d,x:xx,cost,C:Cd};}
+      shiftRows(u,best.d);C=best.C;x=best.x;}
     mergeInto(FM,C,x);setX(u,x);if(i===0)noteTrunk(u);});
   const out={};
   const emit=u=>{const y=u.row*ROWH;
     if(u.grid){emitGrid(u,u.cx-u.w/2,y,out);return;}
-    if(u.chain)out[u.key]={t:'c',x:u.cx-CHW/2,y:u.rowEnd*ROWH+(NH-CHH)/2,label:u.label,ids:u.ids,fixed:!!u.fixed};
+    if(u.chain)out[u.key]={t:'c',x:u.cx-u.uw/2,y:u.rowEnd*ROWH+(NH-CHH)/2,w:u.uw,label:u.label,ids:u.ids,fixed:!!u.fixed};
     else{const x0=u.cx-u.uw/2;emitUnit(u,x0,y,out);
       if(u.stub)out['s:'+u.id]={t:'s',x:x0+NW/2-CHW/2,y:(u.row-1)*ROWH+(NH-CHH)/2,label:'↑ '+u.stub.label,anc:u.stub.anc};}
     u.kids.forEach(emit);};
@@ -1601,17 +1618,19 @@ let CUR={},LINKS=[],anim=null;
 const mainIds=new Set(P.filter(p=>p.main).map(p=>p.id));
 const tierOf=id=>TOP.has(id)?1:mainIds.has(id)?2:byId[id]&&byId[id].key?3:4;
 const FS={1:15,2:14,3:13,4:12};
-function boxOf(e){if(e.t==='c'||e.t==='s')return{x:e.x,y:e.y,w:CHW,h:CHH};if(e.t==='g')return{x:e.x,y:e.y,w:e.w,h:e.h};return{x:e.x,y:e.y,w:NW,h:NH};}
+function boxOf(e){if(e.t==='c')return{x:e.x,y:e.y,w:e.w||CHW,h:CHH};if(e.t==='s')return{x:e.x,y:e.y,w:CHW,h:CHH};if(e.t==='g')return{x:e.x,y:e.y,w:e.w,h:e.h};return{x:e.x,y:e.y,w:NW,h:NH};}
 const keyId=k=>k.startsWith('m:')?k.slice(2).split('@')[0]:k.slice(2);
 function draw(S){let back='',w='',n='',ml='';
   if(FULL&&ERA_Y.length)ERA_Y.forEach((e,i)=>{back+=`<rect class="era${i%2?' alt':''}" x="${FX[0]-4000}" y="${e.y0}" width="${FX[1]-FX[0]+8000}" height="${e.y1-e.y0}"/>`;ml+=`<g class="erl" data-y0="${e.y0}" data-y1="${e.y1}" data-w="${e.t.length*12+8}"><text>${esc(e.t)}</text></g>`;});
   if(FULL){let rib='',ribs='';
-    P.forEach(p=>{if(!p.main)return;const bp=bpOf(p);if(!bp||!mainIds.has(bp.id))return;const a=S['p:'+bp.id],b=S['p:'+p.id];if(!a||!b)return;
-      const ax=a.x+NW/2,bx=b.x+NW/2,my=b.y-VG/2;const d=`M${ax},${a.y+NH/2} V${my} H${bx} V${b.y+NH/2} `;
+    const inCh={};Object.values(S).forEach(e=>{if(e.t==='c'&&!e.fixed&&e.ids)e.ids.forEach(i=>{inCh[i]=e;});});
+    const at=id=>S['p:'+id]||inCh[id];const ccx=e=>e.x+(e.t==='c'?(e.w||CHW)/2:NW/2),ccy=e=>e.y+(e.t==='c'?CHH:NH)/2,rtop=e=>e.t==='c'?e.y-(NH-CHH)/2:e.y;
+    P.forEach(p=>{if(!p.main)return;const bp=bpOf(p);if(!bp||!mainIds.has(bp.id))return;const a=at(bp.id),b=at(p.id);if(!a||!b||a===b)return;
+      const my=rtop(b)-VG/2;const d=`M${ccx(a)},${ccy(a)} V${my} H${ccx(b)} V${ccy(b)} `;
       if(p.mskip||byId[bp.id].mskip)ribs+=d;else rib+=d;});  // 마태복음이 건너뛴 왕들 구간은 점선 띠
     if(rib)back+=`<path class="rib" d="${rib}"/>`;if(ribs)back+=`<path class="rib skip" d="${ribs}"/>`;
-    if(typeof MARKS!=='undefined'&&TRUNK.length)MARKS.forEach(m=>{const r=Math.ceil(estRow(m.y)-1e-6);const t=TRUNK.find(x=>x.r===r);const e=t&&S['p:'+t.id];if(!e)return;
-      ml+=`<g class="mk" data-x="${e.x+NW/2}" data-y="${e.y-VG/2}" data-w="${Math.round(m.t.length*11.5+16)}"><path d="M0,-5 L5,0 L0,5 L-5,0Z"/><text x="-10" y="4" text-anchor="end">${esc(m.t)}</text></g>`;});}
+    if(typeof MARKS!=='undefined'&&TRUNK.length)MARKS.forEach(m=>{const r=Math.ceil(estRow(m.y)-1e-6);const t=TRUNK.find(x=>x.r===r);const e=t&&at(t.id);if(!e)return;
+      ml+=`<g class="mk" data-x="${ccx(e)}" data-y="${rtop(e)-VG/2}" data-w="${Math.round(m.t.length*11.5+16)}"><path d="M0,-5 L5,0 L0,5 L-5,0Z"/><text x="-10" y="4" text-anchor="end">${esc(m.t)}</text></g>`;});}
   LINKS.forEach(L=>{
     if(L.t==='m'){const a=S[L.a],b=S[L.b];if(!a||!b)return;const y=a.y+NH/2;const o=Math.min(a.o??1,b.o??1);const dm=HL&&!(HL.has(keyId(L.a))&&HL.has(keyId(L.b)))?' dim':'';w+=`<line class="mar${dm}" x1="${a.x+NW}" y1="${y}" x2="${b.x}" y2="${y}" opacity="${o}"/>`;
       if(L.a===L.o)w+=`<circle class="ring${dm}" cx="${(a.x+NW+b.x)/2}" cy="${y}" r="4.5" opacity="${o}"/>`;return;}
@@ -1628,7 +1647,9 @@ function draw(S){let back='',w='',n='',ml='';
     if(dash.length){let dd='';dash.forEach(t=>{dd+=`M${t.x},${busY} V${t.y} `;});w+=`<path class="wire dash${dm}" d="${dd}" opacity="${op}"/>`;}});
   Object.entries(S).forEach(([kk,e])=>{const o=e.o??1;if(o<=0.01)return;
     if(e.t==='g'){back+=`<rect class="blk" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="12" opacity="${o}"/>`;return;}
-    if(e.t==='c'){n+=`<g class="ch${e.fixed?' fixed':''}" data-chain="${e.ids.join(',')}" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${CHW}" height="${CHH}" rx="${CHH/2}"/><text x="${CHW/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
+    if(e.t==='c'){const cw=e.w||CHW;const dm=HL&&!e.fixed&&!(e.ids||[]).some(i=>HL.has(i))?' dim':'';
+      n+=`<g class="ch${e.fixed?' fixed':''}${dm}" data-chain="${e.ids.join(',')}"${e.fixed?'':` tabindex="0" role="button" aria-label="${esc(e.label)} 펼치기"`} transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${cw}" height="${CHH}" rx="${CHH/2}"/><text x="${cw/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;
+      if(FULL&&!e.fixed)ml+=`<g class="mlg t3 fold${dm}" data-x="${e.x+cw/2}" data-y="${e.y+CHH/2}" data-p="3.5" data-w="${Math.round(e.label.length*11+8)}" data-h="16"><text class="ml" y="4" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
     if(e.t==='s'){const dm=HL&&!HL.has(keyId(kk))?' dim':'';n+=`<g class="ch stub${dm}" data-anc="${e.anc}" tabindex="0" role="button" aria-label="${esc(e.label)}: 조상에게로" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${CHW}" height="${CHH}" rx="${CHH/2}"/><text x="${CHW/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
     const p=byId[e.id];if(!p)return;const fo=e.id===FOCUS&&e.t==='p';const dm=HL&&!HL.has(e.id)?' dim':'';const rl=HL&&HL.has(e.id)&&!fo?' rel':'';
     const nmv=nm(p),len=nmv.length,tc=len>=9?' class="s3"':len>=7?' class="s2"':'';
@@ -1648,14 +1669,17 @@ function lod(){const far=k>(FULL?FARK:1.7);svg.classList.toggle('far',far);
     const sy=Math.min(Math.max(y0+15,topSafe+12),y1-6),sx=10;const b={x0:sx-2,x1:sx+(+el.dataset.w),y0:sy-13,y1:sy+4};
     if(!fits(b)){el.style.display='none';return;}el.style.display='block';
     el.setAttribute('transform',`translate(${V.x+sx*k} ${V.y+sy*k}) scale(${k})`);placed.push(b);});
-  G.querySelectorAll('.mk').forEach(el=>{const sx=(+el.dataset.x-V.x)/k,sy=(+el.dataset.y-V.y)/k;const b={x0:sx-(+el.dataset.w),x1:sx+6,y0:sy-8,y1:sy+8};
+  const marks=()=>G.querySelectorAll('.mk').forEach(el=>{const sx=(+el.dataset.x-V.x)/k,sy=(+el.dataset.y-V.y)/k;const b={x0:sx-(+el.dataset.w),x1:sx+6,y0:sy-8,y1:sy+8};
     if(sx<-20||b.x0>vw||sy<topSafe||sy>vh||!fits(b)){el.style.display='none';return;}placed.push(b);el.style.display='block';el.setAttribute('transform',`translate(${el.dataset.x} ${el.dataset.y}) scale(${k})`);});
   const els=G.querySelectorAll('.mlg');
-  if(!far){els.forEach(el=>{el.style.display='none';});return;}
+  if(!far){els.forEach(el=>{el.style.display='none';});marks();return;}
   const arr=[];els.forEach(el=>{const x=(+el.dataset.x-V.x)/k,y=(+el.dataset.y-V.y)/k;if(x<-80||x>vw+80||y<-20||y>vh+20){el.style.display='none';return;}arr.push({el,x,y,p:+el.dataset.p,w:+el.dataset.w,h:+el.dataset.h});});
   arr.sort((a,b)=>a.p-b.p||a.y-b.y||a.x-b.x);
-  arr.forEach(o=>{const b={x0:o.x-o.w/2-2,x1:o.x+o.w/2+2,y0:o.y-o.h/2,y1:o.y+o.h/2};const show=fits(b);if(show)placed.push(b);
-    o.el.style.display=show?'block':'none';if(show)o.el.setAttribute('transform',`translate(${o.el.dataset.x} ${o.el.dataset.y}) scale(${k})`);});}
+  let marked=false;
+  arr.forEach(o=>{if(!marked&&o.p>1){marks();marked=true;}
+    const b={x0:o.x-o.w/2-2,x1:o.x+o.w/2+2,y0:o.y-o.h/2,y1:o.y+o.h/2};const show=fits(b);if(show)placed.push(b);
+    o.el.style.display=show?'block':'none';if(show)o.el.setAttribute('transform',`translate(${o.el.dataset.x} ${o.el.dataset.y}) scale(${k})`);});
+  if(!marked)marks();}
 function relayout(opts={}){const{pos,links}=layout(FOCUS);LINKS=links;
   const from=CUR,to=pos;const keys=new Set([...Object.keys(from),...Object.keys(to)]);
   const start={},end={};
@@ -1748,15 +1772,17 @@ function introInfo(){const st=STORY.filter(id=>byId[id]);
 
 // ===== 중심 바꾸기 =====
 function focusOn(id,opts={}){if(!byId[id])return;FOCUS=id;
-  if(FULL){HL=related(id);if(!Object.keys(CUR).length)relayout({instant:true,fit:false});else draw(CUR);panTo(id,opts.instant);}else{HL=null;relayout(opts);}
+  if(FULL){HL=related(id);if(!Object.keys(CUR).length)relayout({instant:true,fit:false});else if(!CUR['p:'+id]&&!CUR['a:'+id]){EXPC.add(id);relayout({instant:true,fit:false});syncRefold();}else draw(CUR);panTo(id,opts.instant);}else{HL=null;relayout(opts);}
   if(!EMBED)showInfo(id);
   try{history.replaceState(null,'',EMBED?`#embed-p-${id}`:`#p-${id}`);}catch(e){}
   if(EMBED){try{parent.postMessage({bibleTree:'sel',id},'*');}catch(e){}}}
 function clearSel(){if(!FULL)return;FOCUS=null;HL=null;draw(CUR);introInfo();try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
-function setMode(full){FULL=full;$('mode').textContent=FULL?'가족만 보기':'전체 보기';$('mode').setAttribute('aria-pressed',FULL?'false':'true');
+function setMode(full){FULL=full;setTimeout(syncRefold,0);$('mode').textContent=FULL?'가족만 보기':'전체 보기';$('mode').setAttribute('aria-pressed',FULL?'false':'true');
   if(!FULL&&!FOCUS)FOCUS='abraham';HL=FULL&&FOCUS?related(FOCUS):null;relayout({fit:true});if(FULL&&FOCUS)setTimeout(()=>panTo(FOCUS),480);if(FOCUS)showInfo(FOCUS);else if(FULL)introInfo();}
 function toggleKids(id){if(EXPK.has(id))EXPK.delete(id);else EXPK.add(id);relayout();}
-function openChain(ids){ids.forEach(i=>EXPC.add(i));relayout();}
+function openChain(ids){ids.forEach(i=>EXPC.add(i));relayout(FULL?{fit:false}:{});syncRefold();}
+function syncRefold(){$('refold').hidden=!(FULL&&EXPC.size);}
+$('refold').addEventListener('click',()=>{EXPC.clear();if(FOCUS)EXPC.add(FOCUS);relayout({fit:false});syncRefold();});
 
 // ===== 입력 =====
 // 이름 찾기 (다른 이름으로도)
@@ -1788,7 +1814,7 @@ function peek(on){if(!narrow()||EMBED)return;$('side').classList.toggle('peek',o
 $('fit').addEventListener('click',()=>{if(FULL)fitAll();else frameView(CUR);});
 const zoomBy=f=>{const a=area();const cx=V.x+((a.l+a.r)/2)*k,cy=V.y+((a.t+a.b)/2)*k;const nk=Math.min(KMAXZ,Math.max(.25,k*f));goV({x:cx-((a.l+a.r)/2)*nk,y:cy-((a.t+a.b)/2)*nk,w:a.W*nk});};
 $('zin').addEventListener('click',()=>zoomBy(1/1.4));$('zout').addEventListener('click',()=>zoomBy(1.4));
-G.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const s=e.target.closest('.ch.stub');if(s){e.preventDefault();focusOn(s.dataset.anc);return;}const n=e.target.closest('.nd');if(n){e.preventDefault();focusOn(n.dataset.id);}});
+G.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const s=e.target.closest('.ch.stub');if(s){e.preventDefault();focusOn(s.dataset.anc);return;}const fc=e.target.closest('.ch:not(.fixed):not(.stub)');if(fc){e.preventDefault();openChain(fc.dataset.chain.split(','));return;}const n=e.target.closest('.nd');if(n){e.preventDefault();focusOn(n.dataset.id);}});
 function hitAt(x,y){const el=document.elementFromPoint(x,y);if(!el||!el.closest)return;
   const b=el.closest('.bd');if(b){toggleKids(b.dataset.exp);return;}
   const s=el.closest('.ch.stub');if(s){focusOn(s.dataset.anc);peek(true);return;}
