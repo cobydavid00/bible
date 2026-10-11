@@ -19,6 +19,8 @@ a{color:var(--accent)}
 .cue:hover{background:color-mix(in srgb,var(--cue) 12%,transparent)}
 .vref{color:var(--muted);font-size:.82em;font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:.15em}
 .vref::before{content:'('}.vref::after{content:')'}
+a.vl{color:inherit;text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,currentColor 50%,transparent);text-underline-offset:3px}
+a.vl:hover{color:var(--accent);text-decoration-style:solid}
 .tag{display:inline-block;font-size:.8em;font-weight:600;color:var(--ink-2);background:var(--band);border-radius:999px;padding:0 8px;vertical-align:middle}
 .fsbar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:4px;padding:6px 0}
 .fsbar button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
