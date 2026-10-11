@@ -59,6 +59,23 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
 .ch text{font-family:var(--ui);font-size:12px;font-weight:600;fill:var(--ink-2);pointer-events:none}
 .ch.fixed{cursor:default}
 .blk{fill:var(--band);stroke:var(--line);stroke-width:1}
+.nd.dim,.bd.dim{opacity:.26}
+.wire.dim,.mar.dim,.ring.dim{opacity:.14}
+.nd.rel rect.box{stroke:var(--ink-2);stroke-width:2}
+.mlg{display:none;pointer-events:none}
+.ml{font-family:var(--display);font-size:14px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.mlg.main .ml{fill:var(--gold)}
+.far .nd text{opacity:0}
+.far .bd{display:none}
+.far .mlg.main,.far .mlg.on{display:block}
+.search{position:absolute;top:12px;left:12px;z-index:3;width:min(330px,calc(100% - 24px))}
+.search input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px;font:inherit;font-size:14.5px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.search ul{list-style:none;margin:6px 0 0;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.14);max-height:min(360px,60vh);overflow:auto}
+.search li{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+.search li small{color:var(--muted);font-size:11.5px;white-space:nowrap}
+.search li[aria-selected="true"],.search li:hover{background:var(--hover)}
+.search .none{color:var(--muted);cursor:default}
 .tools{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;z-index:3}
 .tools button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;height:36px;min-width:36px;padding:0 10px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.06)}
 .tools button:hover{background:var(--hover)}
@@ -100,7 +117,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* 지도 속 작은 창 */
-.embed .snav,.embed .side{display:none!important}
+.embed .snav,.embed .side,.embed .search,.embed #mode{display:none!important}
 .embed .app{height:100%;grid-template-columns:minmax(0,1fr)}
 .embed .tools{left:8px;bottom:8px}
 .embed .tools button{height:32px;min-width:32px;font-size:12px}
@@ -118,6 +135,8 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
   .howto{order:4}
   .tools{bottom:calc(46% + 10px)}
   .app.peek .tools{bottom:160px}
+  .ml{font-size:12px;stroke-width:3.5px}
+  .search{top:8px;left:8px;width:calc(100% - 16px)}
 }
 @media (prefers-reduced-motion: reduce){.side{transition:none}}
 </style>
@@ -133,12 +152,12 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
 <div class="app" id="app">
   <div class="stage" id="stage">
     <svg id="tree" role="img" aria-label="성경 인물 가계도"><g id="g"></g></svg>
-    <div class="tools"><button id="fit" aria-label="전체 맞추기">맞추기</button><button id="zin" aria-label="확대">+</button><button id="zout" aria-label="축소">−</button></div>
+    <div class="search" role="search"><input id="q" type="search" placeholder="이름으로 찾기 (예: 요셉, 리브가)" autocomplete="off" aria-label="이름으로 찾기" aria-controls="qs"><ul id="qs" role="listbox" hidden></ul></div>
+    <div class="tools"><button id="mode" aria-pressed="false">가족만 보기</button><button id="fit" aria-label="전체 맞추기">맞추기</button><button id="zin" aria-label="확대">+</button><button id="zout" aria-label="축소">−</button></div>
   </div>
   <aside class="side" id="side">
     <button class="handle" id="handle" aria-label="설명 펼치기"></button>
     <div class="sh">
-      <select id="find" aria-label="인물 찾기"></select>
       <div class="quick" id="quick"></div>
     </div>
     <div class="info" id="info" aria-live="polite"></div>
@@ -786,11 +805,12 @@ const allKids=id=>P.filter(q=>q.f===id||q.m===id).sort(by);
 const MILE=new Set(['adam','noah','abraham','jacob']);
 
 // ===== 무엇을 보여줄지 (중심 인물 기준) =====
-let FOCUS=null;const EXPK=new Set(),EXPC=new Set();
+let FOCUS=null,HL=null,FULL=!EMBED;const EXPK=new Set(),EXPC=new Set();
 function compute(F){
   const vis=new Set(),ali=new Set(),keep=new Set([F,...EXPC]);MILE.forEach(m=>keep.add(m));
   const f=byId[F];
   const addBirth=id=>{if(ownerOf[id])ali.add(id);else vis.add(id);};
+  if(FULL){P.forEach(q=>{vis.add(q.id);if(ownerOf[q.id]&&bpOf(q))ali.add(q.id);});}else{
   const addKidsOf=id=>{allKids(id).forEach(c=>{addBirth(c.id);spousesOf(c.id).filter(s=>ownerOf[s.id]===c.id).forEach(s=>vis.add(s.id));});};
   const up=(p,depth)=>{const bp=bpOf(p);
     if(bp){const q=byId[bp.id];vis.add(q.id);if(ownerOf[q.id])vis.add(ownerOf[q.id]);if(depth<2)keep.add(q.id);up(q,depth+1);}
@@ -800,6 +820,7 @@ function compute(F){
     spousesOf(F).filter(s=>ownerOf[s.id]===F).forEach(s=>vis.add(s.id));}
   addKidsOf(F);
   EXPK.forEach(id=>{if(vis.has(id)||ali.has(id))slotKids(id).forEach(c=>{addBirth(c.id);spousesOf(c.id).filter(s=>ownerOf[s.id]===c.id).forEach(s=>vis.add(s.id));});});
+  }
   // 단위(사람 + 들어온 배우자)
   const U={};const mk=(key,o)=>U[key]=Object.assign({key,kids:[]},o);
   vis.forEach(id=>{if(ownerOf[id])return;mk('p:'+id,{id,sp:spousesOf(id).filter(s=>ownerOf[s.id]===id&&vis.has(s.id)).sort((a,b)=>(a.mar??born(a))-(b.mar??born(b))).map(s=>s.id)});});
@@ -817,7 +838,7 @@ function compute(F){
   const fold=u=>{u.kids=u.kids.map(c=>{if(!comp(c))return c;const run=[];let x=c;while(x&&comp(x)){run.push(x);x=x.kids[0];}
       if(run.length<2)return c;const ch={key:'c:'+run[0].id+'-'+run[run.length-1].id,chain:true,ids:run.map(r=>r.id),label:`⋯ ${run.length}대`,kids:[x],parent:u};x.parent=ch;return ch;});
     u.kids.forEach(fold);};
-  roots.forEach(fold);
+  if(!FULL)roots.forEach(fold);
   return roots.sort((a,b)=>by(byId[a.id],byId[b.id]));
 }
 
@@ -860,22 +881,27 @@ const mainIds=new Set(P.filter(p=>p.main).map(p=>p.id));
 function boxOf(e){if(e.t==='c')return{x:e.x,y:e.y,w:CHW,h:CHH};if(e.t==='g')return{x:e.x,y:e.y,w:e.w,h:e.h};return{x:e.x,y:e.y,w:NW,h:NH};}
 function draw(S){let back='',w='',n='';
   LINKS.forEach(L=>{
-    if(L.t==='m'){const a=S[L.a],b=S[L.b];if(!a||!b)return;const y=a.y+NH/2;const o=Math.min(a.o??1,b.o??1);w+=`<line class="mar" x1="${a.x+NW}" y1="${y}" x2="${b.x}" y2="${y}" opacity="${o}"/>`;
-      if(L.a===L.o)w+=`<circle class="ring" cx="${(a.x+NW+b.x)/2}" cy="${y}" r="4.5" opacity="${o}"/>`;return;}
+    const idOf=key=>key.slice(2);
+    if(L.t==='m'){const a=S[L.a],b=S[L.b];if(!a||!b)return;const y=a.y+NH/2;const o=Math.min(a.o??1,b.o??1);const dm=HL&&!(HL.has(idOf(L.a))&&HL.has(idOf(L.b)))?' dim':'';w+=`<line class="mar${dm}" x1="${a.x+NW}" y1="${y}" x2="${b.x}" y2="${y}" opacity="${o}"/>`;
+      if(L.a===L.o)w+=`<circle class="ring${dm}" cx="${(a.x+NW+b.x)/2}" cy="${y}" r="4.5" opacity="${o}"/>`;return;}
     const fa=S[L.from.k];if(!fa)return;let sx,sy;
     if(L.from.b&&S[L.from.b]){const b=S[L.from.b];sx=(fa.x+NW+b.x)/2;sy=fa.y+NH/2;}else{const bx=boxOf(fa);sx=bx.x+bx.w/2;sy=bx.y+bx.h;}
     const tops=L.kids.map(c=>{const e=S[c.k];if(!e)return null;const bx=boxOf(e);return{x:bx.x+bx.w/2,y:bx.y,o:e.o??1};}).filter(Boolean);if(!tops.length)return;
     const busY=Math.min(...tops.map(t=>t.y))-(L.from.ch||L.kids.some(c=>c.ch)?VGC/2:VG/2);
     const xs=tops.map(t=>t.x);const x0=Math.min(sx,...xs),x1=Math.max(sx,...xs);
     let d=`M${sx},${sy} V${busY} M${x0},${busY} H${x1}`;tops.forEach(t=>{d+=` M${t.x},${busY} V${t.y}`;});
-    w+=`<path class="wire${L.dash?' dash':''}" d="${d}" opacity="${Math.min(fa.o??1,...tops.map(t=>t.o))}"/>`;});
+    const fid=L.from.ch?null:idOf(L.from.k);const dm=HL&&!(fid&&HL.has(fid))?' dim':'';
+    w+=`<path class="wire${L.dash?' dash':''}${dm}" d="${d}" opacity="${Math.min(fa.o??1,...tops.map(t=>t.o))}"/>`;});
+  let ml='';
   Object.entries(S).forEach(([k,e])=>{const o=e.o??1;if(o<=0.01)return;
     if(e.t==='g'){back+=`<rect class="blk" x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="12" opacity="${o}"/>`;return;}
     if(e.t==='c'){n+=`<g class="ch${e.fixed?' fixed':''}" data-chain="${e.ids.join(',')}" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${CHW}" height="${CHH}" rx="${CHH/2}"/><text x="${CHW/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
-    const p=byId[e.id];const fo=e.id===FOCUS&&e.t==='p';
-    n+=`<g class="nd${fo?' fo':''}${e.t==='a'?' al':''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(p.name)}" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect class="box" width="${NW}" height="${NH}" rx="10"/>${mainIds.has(e.id)&&e.t==='p'?`<rect class="mb" x="12" y="0" width="${NW-24}" height="3" rx="1.5"/>`:''}<text x="${NW/2}" y="${NH/2+5}" text-anchor="middle">${esc(nm(p))}</text>${e.t==='a'?`<text class="arr" x="${NW-10}" y="14" text-anchor="middle">↗</text>`:''}</g>`;
-    if(e.t==='p'&&(e.hid>0||EXPK.has(e.id))){const open=EXPK.has(e.id)&&!(e.hid>0);n+=`<g class="bd${open?' open':''}" data-exp="${e.id}" transform="translate(${e.x+NW-6} ${e.y+NH-2})" opacity="${o}"><circle r="11"/><text y="4" text-anchor="middle">${open?'−':'+'+e.hid}</text></g>`;}});
-  G.innerHTML=back+w+n;}
+    const p=byId[e.id];const fo=e.id===FOCUS&&e.t==='p';const dm=HL&&!HL.has(e.id)?' dim':'';const rl=HL&&HL.has(e.id)&&!fo?' rel':'';
+    if(e.t==='p')ml+=`<g class="mlg${mainIds.has(e.id)?' main':''}${HL&&HL.has(e.id)?' on':''}" data-x="${e.x+NW+6}" data-y="${e.y+NH/2+5}"><text class="ml">${esc(nm(p))}</text></g>`;
+    n+=`<g class="nd${fo?' fo':''}${e.t==='a'?' al':''}${dm}${rl}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(p.name)}" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect class="box" width="${NW}" height="${NH}" rx="10"/>${mainIds.has(e.id)&&e.t==='p'?`<rect class="mb" x="12" y="0" width="${NW-24}" height="3" rx="1.5"/>`:''}<text x="${NW/2}" y="${NH/2+5}" text-anchor="middle">${esc(nm(p))}</text>${e.t==='a'?`<text class="arr" x="${NW-10}" y="14" text-anchor="middle">↗</text>`:''}</g>`;
+    if(e.t==='p'&&!FULL&&(e.hid>0||EXPK.has(e.id))){const open=EXPK.has(e.id)&&!(e.hid>0);n+=`<g class="bd${open?' open':''}${dm}" data-exp="${e.id}" transform="translate(${e.x+NW-6} ${e.y+NH-2})" opacity="${o}"><circle r="11"/><text y="4" text-anchor="middle">${open?'−':'+'+e.hid}</text></g>`;}});
+  G.innerHTML=back+w+n+ml;lod();}
+function lod(){svg.classList.toggle('far',k>1.7);G.querySelectorAll('.mlg').forEach(el=>el.setAttribute('transform',`translate(${el.dataset.x} ${el.dataset.y}) scale(${k})`));}
 function relayout(opts={}){const{pos,links}=layout(FOCUS);LINKS=links;
   const from=CUR,to=pos;const keys=new Set([...Object.keys(from),...Object.keys(to)]);
   const start={},end={};
@@ -883,7 +909,7 @@ function relayout(opts={}){const{pos,links}=layout(FOCUS);LINKS=links;
     if(a&&b){start[k]=Object.assign({},b,{x:a.x,y:a.y,w:a.w??b.w,h:a.h??b.h,o:a.o??1});end[k]=Object.assign({},b,{o:1});}
     else if(b){start[k]=Object.assign({},b,{o:0});end[k]=Object.assign({},b,{o:1});}
     else{start[k]=Object.assign({},a);end[k]=Object.assign({},a,{o:0});}});
-  frameView(to,opts.instant);
+  if(opts.fit!==false){if(FULL)fitAll(to,opts.instant);else frameView(to,opts.instant);}
   if(anim)cancelAnimationFrame(anim);
   if(opts.instant||reduced||document.hidden){CUR=to;draw(CUR);return;}
   const t0=performance.now(),D=460;
@@ -895,7 +921,7 @@ function relayout(opts={}){const{pos,links}=layout(FOCUS);LINKS=links;
 // ===== 보기(확대·이동) =====
 let V={x:-200,y:-100,w:1200},k=1,vanim=null;
 const rect=()=>svg.getBoundingClientRect();
-function applyV(v){const r=rect();V={x:v.x,y:v.y,w:v.w};k=V.w/Math.max(1,r.width);svg.setAttribute('viewBox',`${V.x} ${V.y} ${V.w} ${V.w*r.height/Math.max(1,r.width)}`);}
+function applyV(v){const r=rect();V={x:v.x,y:v.y,w:v.w};k=V.w/Math.max(1,r.width);svg.setAttribute('viewBox',`${V.x} ${V.y} ${V.w} ${V.w*r.height/Math.max(1,r.width)}`);lod();}
 function goV(v,instant){if(vanim)cancelAnimationFrame(vanim);if(instant||reduced||document.hidden){applyV(v);return;}
   const f={...V},t0=performance.now(),D=460;const step=t=>{let q=Math.min(1,(t-t0)/D);q=q<.5?2*q*q:-1+(4-2*q)*q;applyV({x:f.x+(v.x-f.x)*q,y:f.y+(v.y-f.y)*q,w:f.w+(v.w-f.w)*q});if(q<1)vanim=requestAnimationFrame(step);else vanim=null;};vanim=requestAnimationFrame(step);}
 function area(){const r=rect();let b=r.height;if(!EMBED&&narrow()){const s=$('side').getBoundingClientRect();b=Math.max(140,s.top-r.top);}return{W:r.width,H:r.height,t:16,b:b-56,l:16,r:r.width-16};}
@@ -908,6 +934,20 @@ function frameView(pos,instant){const a=area();const es=Object.values(pos);if(!e
       cx=f.x+NW/2;cy=f.y+NH/2+20;
       cx=Math.min(Math.max(cx,x0+aw*kk/2),x1-aw*kk/2);cy=Math.min(Math.max(cy,y0+ah*kk/2),y1-ah*kk/2);}}
   const sx=(a.l+a.r)/2,sy=(a.t+a.b)/2;goV({x:cx-sx*kk,y:cy-sy*kk,w:a.W*kk},instant);}
+
+// 전체 보기: 모든 세대가 한눈에 (휴대폰은 높이에 맞추고 줄기 쪽으로)
+function bounds(pos){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;Object.values(pos).forEach(e=>{const b=boxOf(e);x0=Math.min(x0,b.x);y0=Math.min(y0,b.y);x1=Math.max(x1,b.x+b.w+14);y1=Math.max(y1,b.y+b.h+14);});return{x0,y0,x1,y1};}
+function fitAll(pos,instant){pos=pos||CUR;const a=area();const B=bounds(pos);const aw=a.r-a.l,ah=a.b-a.t-50;
+  let kk,cx,cy=(B.y0+B.y1)/2;
+  if(narrow()){kk=(B.y1-B.y0)/ah;const ms=Object.values(pos).filter(e=>e.t==='p'&&mainIds.has(e.id));cx=ms.length?ms.reduce((s,e)=>s+e.x,0)/ms.length+NW/2:(B.x0+B.x1)/2;}
+  else{kk=Math.max((B.x1-B.x0)/aw,(B.y1-B.y0)/ah);cx=(B.x0+B.x1)/2;}
+  kk=Math.max(kk,.6);const sx=(a.l+a.r)/2,syy=(a.t+50+a.b)/2;goV({x:cx-sx*kk,y:cy-syy*kk,w:a.W*kk},instant);}
+// 한 사람에게 다가가기 (전체 보기에서 누를 때)
+function panTo(id,instant){const e=CUR['p:'+id]||CUR['a:'+id];if(!e)return;const a=area();const kk=Math.min(Math.max(k,.8),1.15);
+  const sx=(a.l+a.r)/2,syy=narrow()?(a.t+50+(a.b-a.t-50)*.45):(a.t+50+a.b)/2;goV({x:e.x+NW/2-sx*kk,y:e.y+NH/2-syy*kk,w:a.W*kk},instant);}
+// 조상 줄(부모 양쪽) + 배우자 + 자녀
+function related(id){const R=new Set([id]);const up=q=>{if(!q)return;R.add(q.id);const bp=bpOf(q);if(bp)up(byId[bp.id]);if(q.m&&bp&&bp.t==='f')up(byId[q.m]);};
+  const p=byId[id];const bp=bpOf(p);if(bp)up(byId[bp.id]);if(p.m)up(byId[p.m]);spousesOf(id).forEach(x=>R.add(x.id));allKids(id).forEach(x=>R.add(x.id));P.filter(q=>q.anc===id&&!q.f).forEach(x=>R.add(x.id));return R;}
 
 // ===== 사이드바 =====
 const KB={calc:'창세기 나이를 더해 계산',chr:'성경 속 나이로 계산',est:'짐작한 연도'};
@@ -929,31 +969,60 @@ function showInfo(id){const p=byId[id];if(!p)return;
     ${fam.length?`<p class="lbl">가족</p><dl class="fam">${fam.map(([kk,v])=>`<dt>${kk}</dt><dd>${v.map(chip).join('')}</dd>`).join('')}</dl>`:''}
     ${line.length>1?`<p class="lbl">아담에서 여기까지</p><div class="chain">${line.map(q=>q===p?`<span class="pc cur">${esc(nm(q))}</span>`:chip(q)).join('<span class="s">›</span>')}</div>`:''}
     ${hasMap?`<a class="go" href="map.html#p-${p.id}">지도에서 ${p.steps?'이 사람이 간 길':'사는 곳'} 보기 →</a>`:''}`;
-  $('info').scrollTop=0;$('find').value=id;}
+  $('info').scrollTop=0;}
+
+function introInfo(){const mains=P.filter(p=>p.main).sort(by);
+  $('info').innerHTML=`<h2>성경 인물 가계도</h2>
+    <p class="nt">아담부터 출애굽 세대까지 85명이 한 그림에 있어요. 한 줄이 한 세대이고, 부부는 나란히, 자녀는 그 아래로 이어져요. 금색 이름이 이야기가 따라가는 줄기예요.</p>
+    <p class="lbl">이야기 줄기</p><div class="chain">${mains.map(chip).join('<span class="s">›</span>')}</div>
+    <p class="nt">사람을 누르면 그 사람의 조상 줄과 가족이 밝게 보이고, 여기에 그 사람 이야기가 나와요. 위의 칸에 이름을 쳐서 찾을 수도 있어요.</p>`;$('info').scrollTop=0;}
 
 // ===== 중심 바꾸기 =====
-function focusOn(id,opts={}){if(!byId[id])return;FOCUS=id;relayout(opts);if(!EMBED)showInfo(id);
+function focusOn(id,opts={}){if(!byId[id])return;FOCUS=id;
+  if(FULL){HL=related(id);if(!Object.keys(CUR).length)relayout({instant:true,fit:false});else draw(CUR);panTo(id,opts.instant);}else{HL=null;relayout(opts);}
+  if(!EMBED)showInfo(id);
   try{history.replaceState(null,'',EMBED?`#embed-p-${id}`:`#p-${id}`);}catch(e){}
   if(EMBED){try{parent.postMessage({bibleTree:'sel',id},'*');}catch(e){}}}
+function clearSel(){if(!FULL)return;FOCUS=null;HL=null;draw(CUR);introInfo();try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+function setMode(full){FULL=full;$('mode').textContent=FULL?'가족만 보기':'전체 보기';$('mode').setAttribute('aria-pressed',FULL?'false':'true');
+  if(!FULL&&!FOCUS)FOCUS='abraham';HL=FULL&&FOCUS?related(FOCUS):null;relayout({fit:true});if(FULL&&FOCUS)setTimeout(()=>panTo(FOCUS),480);if(FOCUS)showInfo(FOCUS);}
 function toggleKids(id){if(EXPK.has(id))EXPK.delete(id);else EXPK.add(id);relayout();}
 function openChain(ids){ids.forEach(i=>EXPC.add(i));relayout();}
 
 // ===== 입력 =====
 const GROUPS=['창조에서 홍수까지','홍수에서 아브라함까지','아브라함 집안','야곱의 열두 아들','출애굽 세대','족장 시대 (추정)'];
-$('find').innerHTML='<option value="">사람 찾기…</option>'+GROUPS.map(g=>{const L=P.filter(p=>p.g===g).sort(by);return L.length?`<optgroup label="${esc(g)}">${L.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</optgroup>`:'';}).join('');
-$('find').addEventListener('change',e=>{if(e.target.value){focusOn(e.target.value);peek(true);}});
+// 이름 찾기
+const ALIASES={'아브람':'abraham','사래':'sarah','르우엘':'jethro','이스라엘':'jacob','암몬':'ammon'};
+let qi=-1,qres=[];
+function search(t){t=t.trim();if(!t)return[];const out=[];const seen=new Set();
+  const push=p=>{if(p&&!seen.has(p.id)){seen.add(p.id);out.push(p);}};
+  Object.entries(ALIASES).forEach(([a,id])=>{if(a.startsWith(t))push(byId[id]);});
+  P.filter(p=>nm(p).startsWith(t)).sort(by).forEach(push);
+  P.filter(p=>p.name.includes(t)).sort(by).forEach(push);
+  return out.slice(0,8);}
+function showQs(){const ul=$('qs');const t=$('q').value;qres=search(t);qi=qres.length?0:-1;
+  if(!t.trim()){ul.hidden=true;return;}
+  ul.innerHTML=qres.length?qres.map((p,i)=>`<li role="option" data-id="${p.id}" aria-selected="${i===qi}"><span>${esc(p.name)}</span><small>${esc(p.g||'')}</small></li>`).join(''):'<li class="none">찾는 이름이 없어요</li>';ul.hidden=false;}
+function pickQ(id){$('qs').hidden=true;$('q').value='';$('q').blur();focusOn(id);peek(true);}
+$('q').addEventListener('input',showQs);
+$('q').addEventListener('keydown',e=>{const ul=$('qs');if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!qres.length)return;e.preventDefault();qi=(qi+(e.key==='ArrowDown'?1:-1)+qres.length)%qres.length;ul.querySelectorAll('li').forEach((li,i)=>li.setAttribute('aria-selected',i===qi?'true':'false'));}
+  else if(e.key==='Enter'){if(qres[qi])pickQ(qres[qi].id);}else if(e.key==='Escape'){ul.hidden=true;$('q').blur();}});
+$('qs').addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-id]');if(li){e.preventDefault();pickQ(li.dataset.id);}});
+$('q').addEventListener('blur',()=>setTimeout(()=>{$('qs').hidden=true;},150));
+$('mode').addEventListener('click',()=>setMode(!FULL));
 $('quick').innerHTML=['adam','noah','abraham','isaac','jacob','joseph','moses','joshua'].map(id=>chip(byId[id])).join('');
 document.addEventListener('click',e=>{const c=e.target.closest('.pc[data-id]');if(c&&!c.classList.contains('cur')){focusOn(c.dataset.id);}});
 $('handle').addEventListener('click',()=>peek(!$('side').classList.contains('peek')));
-function peek(on){if(!narrow()||EMBED)return;$('side').classList.toggle('peek',on);$('app').classList.toggle('peek',on);$('handle').setAttribute('aria-label',on?'설명 펼치기':'설명 접기');setTimeout(()=>frameView(CUR,false),280);}
-$('fit').addEventListener('click',()=>frameView(CUR));
+function peek(on){if(!narrow()||EMBED)return;$('side').classList.toggle('peek',on);$('app').classList.toggle('peek',on);$('handle').setAttribute('aria-label',on?'설명 펼치기':'설명 접기');}
+$('fit').addEventListener('click',()=>{if(FULL)fitAll();else frameView(CUR);});
 const zoomBy=f=>{const a=area();const cx=V.x+((a.l+a.r)/2)*k,cy=V.y+((a.t+a.b)/2)*k;const nk=Math.min(4,Math.max(.25,k*f));goV({x:cx-((a.l+a.r)/2)*nk,y:cy-((a.t+a.b)/2)*nk,w:a.W*nk});};
 $('zin').addEventListener('click',()=>zoomBy(1/1.4));$('zout').addEventListener('click',()=>zoomBy(1.4));
 G.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const n=e.target.closest('.nd');if(n){e.preventDefault();focusOn(n.dataset.id);}});
 function hitAt(x,y){const el=document.elementFromPoint(x,y);if(!el||!el.closest)return;
   const b=el.closest('.bd');if(b){toggleKids(b.dataset.exp);return;}
   const c=el.closest('.ch');if(c&&!c.classList.contains('fixed')){openChain(c.dataset.chain.split(','));return;}
-  const n=el.closest('.nd');if(n){if(n.dataset.id!==FOCUS)focusOn(n.dataset.id);peek(true);}}
+  const n=el.closest('.nd');if(n){if(n.dataset.id!==FOCUS)focusOn(n.dataset.id);peek(true);return;}
+  if(FULL&&FOCUS)clearSel();}
 const ptrs=new Map();let drag=null,dragged=false,pinch=null;
 const toMap=(sx,sy)=>[V.x+sx*k,V.y+sy*k];
 svg.addEventListener('pointerdown',e=>{if(e.button!==0&&e.pointerType==='mouse')return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});svg.setPointerCapture(e.pointerId);
@@ -975,6 +1044,7 @@ addEventListener('hashchange',()=>openHash(false));
 // 시작
 applyV(V);
 if(narrow()&&!EMBED)peek(true);
-if(!openHash(true))focusOn('abraham',{instant:true});
+if(EMBED){if(!openHash(true))focusOn('abraham',{instant:true});}
+else{relayout({instant:true});introInfo();openHash(true);}
 </script>
 </body></html>
