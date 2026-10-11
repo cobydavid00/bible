@@ -62,6 +62,26 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
 .steps li{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:12.5px;align-items:baseline}
 .steps .at{color:var(--ink);font-weight:600;white-space:nowrap;cursor:pointer}
 .steps .at:hover{text-decoration:underline}
+.who{all:unset;cursor:pointer;color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--c-law) 60%,transparent);text-decoration-thickness:2px;text-underline-offset:3px;border-radius:3px}
+.who:hover{background:var(--hover)}
+.who:focus-visible{outline:2px solid var(--c-law);outline-offset:1px}
+.jr-on #routes,.jr-on #places,.jr-on #people{opacity:.3}
+.hud.jchip{top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 4px 4px 12px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.08);white-space:nowrap}
+.hud.jchip button{border:0;background:var(--band);color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}
+.pwin{position:absolute;right:12px;bottom:12px;width:min(560px,calc(100% - 24px));height:min(500px,calc(100% - 70px));z-index:6;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.22);overflow:hidden}
+.pw-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px 12px 0 16px}
+.pw-t b{font-family:var(--display);font-size:19px;margin-right:8px}
+.pw-t span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pw-x{flex:0 0 auto;border:0;background:var(--band);color:var(--ink);width:30px;height:30px;border-radius:8px;font-size:18px;cursor:pointer}
+.pw-why{margin:4px 16px 8px;font-size:13px;color:var(--ink-2)}
+.pwin iframe{flex:1 1 auto;width:100%;min-height:0;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--ground)}
+.pw-a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px 12px 16px;flex-wrap:wrap}
+.pw-a button{border:1px solid var(--line);background:var(--band);color:var(--ink);border-radius:999px;padding:7px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.pw-a button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.pw-a a{font-size:12.5px;font-weight:600;color:var(--c-law);text-decoration:none}
+.pw-b{display:flex;gap:6px;flex-wrap:wrap}
+.pwin.mini{height:auto}
+.pwin.mini iframe{display:none}
 .est{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 5px;vertical-align:middle}
 .tabs{display:flex;gap:6px;padding:0 14px 10px}
 .tabs button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:8px;padding:7px 8px;font:inherit;font-size:12.5px;cursor:pointer;text-align:left;line-height:1.3}
@@ -154,9 +174,9 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
   .side{order:2;border-right:0;border-top:1px solid var(--line)}
   .mapwrap{order:1}
   .head{display:none}
-  .mode{padding:8px 10px 6px}
-  .pfind{padding:0 10px 8px}
-  .tabs{padding:0 10px 6px;gap:6px}
+  .tabs{padding:8px 10px 6px;gap:6px}
+  .pwin{position:fixed;left:0;right:0;bottom:0;width:auto;height:min(62dvh,62vh);border-radius:14px 14px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .hud.jchip{top:10px;font-size:12px}
   .tabs button{padding:6px 8px;font-size:12px}
   .tabs button b{font-size:12.5px}
   .list{display:flex;overflow-x:auto;overflow-y:hidden;flex:0 0 auto;padding:6px 10px;gap:6px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
@@ -197,16 +217,14 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
 .snav .brand{font-family:"Gowun Batang",serif;font-weight:700;font-size:14px;color:var(--ink,#1c1c1a);margin-right:6px}
 .snav .brand:hover{background:none}
 </style>
-<nav class="snav" aria-label="사이트 메뉴"><a class="brand" href="index.html">성경 8주 개관</a><a href="index.html">홈</a><a href="map.html" aria-current="page">지도</a><a href="timeline.html">연대표</a></nav>
+<nav class="snav" aria-label="사이트 메뉴"><a class="brand" href="index.html">성경 8주 개관</a><a href="index.html">홈</a><a href="map.html" aria-current="page">지도</a><a href="genealogy.html">인물</a><a href="timeline.html">연대표</a></nav>
 <div class="app">
   <aside class="side">
     <div class="head">
       <h1>성경 이야기 지도</h1>
       <p class="lede">장면을 고르면 그때 누가 어디에 있었고, 어디로 움직였고, 무슨 일이 어디서 있었는지 지도에 표시돼요. 나라 이름은 그 시대 기준이에요.</p>
     </div>
-    <div class="mode" role="tablist" id="mode"><button role="tab" data-m="scene" aria-selected="true">장면별</button><button role="tab" data-m="person" aria-selected="false">인물별</button></div>
     <div class="tabs" role="tablist" id="tabs"></div>
-    <div class="pfind" id="pfind" hidden><select id="pall" aria-label="인물 찾기"></select></div>
     <ol class="list" id="list"></ol>
     <div class="info" id="info"></div>
     <details class="legend">
@@ -214,8 +232,9 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
       <ul>
         <li><svg width="22" height="12"><circle cx="11" cy="6" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.7"/></svg>장소</li>
         <li><svg width="22" height="16"><circle cx="11" cy="8" r="7" fill="none" stroke="var(--ev)" stroke-width="1.6"/><circle cx="11" cy="8" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.7"/></svg>이 장면의 사건이 있는 곳</li>
-        <li><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="6" fill="var(--ink)"/></svg>인물이 있는 곳 (누르면 그 사람의 여정으로)</li>
-        <li><svg width="22" height="18"><circle cx="11" cy="9" r="8" fill="var(--c-law)" stroke="var(--surface)" stroke-width="1.6"/><text x="11" y="9" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">3</text></svg>인물별: 여정 순서</li>
+        <li><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="6" fill="var(--ink)"/></svg>인물이 있는 곳. 누르면 가계도 창이 열려요</li>
+        <li><svg width="22" height="18"><circle cx="11" cy="9" r="8" fill="var(--c-law)" stroke="var(--surface)" stroke-width="1.6"/><text x="11" y="9" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">3</text></svg>여정을 그렸을 때: 들른 순서</li>
+        <li><span class="who" style="pointer-events:none">이름</span>설명 속 밑줄 친 이름을 누르면 가계도 창</li>
         <li><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--c-law)" stroke-width="2.2" stroke-linecap="round"/></svg>이동 (사람 색: 아브라함 파랑 · 야곱 주황 · 요셉 분홍 · 모세 황토 · 여호수아 초록)</li>
         <li><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--c-law)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 3"/></svg>짧은 이동 · 추정 경로</li>
         <li><svg width="22" height="14"><ellipse cx="11" cy="7" rx="10" ry="6" fill="var(--region)" fill-opacity=".2" stroke="var(--region)" stroke-opacity=".5"/></svg>나라·민족 (대략적인 범위)</li>
@@ -224,11 +243,18 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spa
   </aside>
   <main class="mapwrap" id="mapwrap">
     <svg id="map" role="img" aria-label="성경 이야기 지도" preserveAspectRatio="xMidYMid meet">
-      <g id="geo"></g><g id="regions"></g><g id="routes"></g><g id="places"></g><g id="people"></g>
+      <g id="geo"></g><g id="regions"></g><g id="routes"></g><g id="places"></g><g id="journey"></g><g id="people"></g>
     </svg>
     <div class="hud top"><button id="prev" aria-label="이전 장면">‹</button><div class="hud-title"><b id="hTitle"></b><span id="hRef"></span></div><button id="next" aria-label="다음 장면">›</button></div>
     <div class="hud eraChip" id="hEra"></div>
     <button class="hud refit" id="refit" hidden>장면 위치로 되돌리기</button>
+    <div class="hud jchip" id="jchip" hidden><span id="jname"></span><button id="jclear" aria-label="여정 지우기">지우기</button></div>
+    <section class="pwin" id="pwin" hidden role="dialog" aria-labelledby="pwName">
+      <div class="pw-h"><div class="pw-t"><b id="pwName"></b><span id="pwYrs"></span></div><button class="pw-x" id="pwX" aria-label="닫기">×</button></div>
+      <p class="pw-why" id="pwWhy"></p>
+      <iframe id="pwFrame" title="가계도 일부"></iframe>
+      <div class="pw-a"><span class="pw-b"><button id="pwJourney" hidden>여정을 지도에 그리기</button><button id="pwFold" aria-expanded="true">가계도 접기</button></span><a id="pwFull" href="genealogy.html">가계도 크게 보기 →</a></div>
+    </section>
     <div class="hud keys">← → 장면 이동 · 드래그로 옮기기 · 휠로 확대</div>
   </main>
 </div>
@@ -720,12 +746,129 @@ const PEOPLE = [
   {id:'nun', name:'눈', g:'출애굽 세대', why:'여호수아의 아버지. 에브라임 지파', ref:'민 13:8, 대상 7:20–27'},
   {id:'jephunneh', name:'여분네', g:'출애굽 세대', why:'갈렙의 아버지. 유다 지파 (그니스 사람)', ref:'민 13:6, 수 14:6'},
 ];
+// ===== 가계도용 연대 =====
+// 연도는 BC = 음수. 기준은 이 사이트의 전통 연대: 아브라함 출생 BC 2166, 출애굽 BC 1446.
+// k: 'calc' = 창세기 5·11장 나이를 그대로 더해 계산한 값 (데라가 130세에 아브라함을 낳았다고 봄, 행 7:4와 맞춤)
+//    'chr'  = 본문 나이·햇수 + 전통 연대로 정해지는 값
+//    'est'  = 본문에 숫자가 없어 앞뒤 맥락으로 잡은 추정값
+// d: null 이면 죽은 해 미상
+// anc: 여러 세대가 생략된 조상 (점선으로 이음)
+// nat: 이 사람에게서 나온 민족 (곁가지 설명)
+// mar: 결혼한 해 (배우자 연결선 높이)
+// main: 이야기가 따라가는 줄기
+const LIFE = {
+  // ---- 창조에서 홍수까지 (창 5장) ----
+  adam:      {b:-4174, d:-3244, k:'calc', src:'창 5:3–5', main:1},
+  eve:       {b:-4174, d:null,  k:'est',  src:'창 2:22, 3:20', mar:-4174},
+  cain:      {b:-4170, d:null,  k:'est',  src:'창 4:1', nat:'성을 쌓은 가인 계보 (창 4:17–24)'},
+  abel:      {b:-4166, d:-4130, k:'est',  src:'창 4:2–8'},
+  seth:      {b:-4044, d:-3132, k:'calc', src:'창 5:3, 6–8', main:1},
+  enosh:     {b:-3939, d:-3034, k:'calc', src:'창 5:6, 9–11', main:1},
+  kenan:     {b:-3849, d:-2939, k:'calc', src:'창 5:9, 12–14', main:1},
+  mahalalel: {b:-3779, d:-2884, k:'calc', src:'창 5:12, 15–17', main:1},
+  jared:     {b:-3714, d:-2752, k:'calc', src:'창 5:15, 18–20', main:1},
+  enoch:     {b:-3552, d:-3187, k:'calc', src:'창 5:18, 21–24, 히 11:5', main:1, n:'죽음 없이 하나님이 데려가심 (히 11:5)'},
+  methuselah:{b:-3487, d:-2518, k:'calc', src:'창 5:21, 25–27', main:1, n:'죽은 해가 홍수가 난 해와 같아요'},
+  lamech:    {b:-3300, d:-2523, k:'calc', src:'창 5:25, 28–31', main:1},
+  noah:      {b:-3118, d:-2168, k:'calc', src:'창 5:28–29, 7:6, 9:28–29', main:1},
+  // ---- 홍수에서 아브라함까지 (창 10–11장) ----
+  shem:      {b:-2616, d:-2016, k:'calc', src:'창 11:10–11', main:1},
+  ham:       {b:-2614, d:null,  k:'est',  src:'창 5:32, 10:6', nat:'이집트·구스·가나안 등'},
+  japheth:   {b:-2615, d:null,  k:'est',  src:'창 5:32, 10:2–5, 21', nat:'북쪽과 바닷가 민족들'},
+  canaan:    {b:-2500, d:null,  k:'est',  src:'창 10:15–19', nat:'가나안 족속'},
+  arpachshad:{b:-2516, d:-2078, k:'calc', src:'창 11:10, 12–13', main:1, n:'홍수 2년 뒤 출생'},
+  shelah:    {b:-2481, d:-2048, k:'calc', src:'창 11:12, 14–15', main:1},
+  eber:      {b:-2451, d:-1987, k:'calc', src:'창 11:14, 16–17', main:1, n:'아브라함보다 오래 산 것으로 계산돼요'},
+  peleg:     {b:-2417, d:-2178, k:'calc', src:'창 11:16, 18–19', main:1},
+  reu:       {b:-2387, d:-2148, k:'calc', src:'창 11:18, 20–21', main:1},
+  serug:     {b:-2355, d:-2125, k:'calc', src:'창 11:20, 22–23', main:1},
+  nahor1:    {b:-2325, d:-2177, k:'calc', src:'창 11:22, 24–25', main:1},
+  terah:     {b:-2296, d:-2091, k:'calc', src:'창 11:24, 26, 32, 행 7:4', main:1, n:'130세에 아브라함을 낳았다고 보면 아브라함 75세에 죽음'},
+  // ---- 아브라함 집안 ----
+  haran:     {b:-2226, d:-2120, k:'est',  src:'창 11:26–28'},
+  nahor2:    {b:-2190, d:null,  k:'est',  src:'창 11:26–29', mar:-2160},
+  abraham:   {b:-2166, d:-1991, k:'chr',  src:'창 12:4, 25:7', main:1, mar:-2140},
+  milcah:    {b:-2180, d:null,  k:'est',  src:'창 11:29'},
+  lot:       {b:-2150, d:null,  k:'est',  src:'창 11:27, 31'},
+  sarah:     {b:-2156, d:-2029, k:'chr',  src:'창 17:17, 20:12, 23:1', n:'아브라함보다 10살 아래 (창 17:17). 이 연대로는 데라가 140세에 낳은 셈이라, "아버지의 딸"(창 20:12)을 손녀로 보는 견해도 있어요'},
+  hagar:     {b:-2110, d:null,  k:'est',  src:'창 16:1–3', mar:-2081},
+  ishmael:   {b:-2080, d:-1943, k:'chr',  src:'창 16:16, 25:17', nat:'열두 족장, 전통적으로 아랍 민족들'},
+  keturah:   {b:-2045, d:null,  k:'est',  src:'창 25:1', mar:-2025},
+  midian:    {b:-2020, d:null,  k:'est',  src:'창 25:2', nat:'미디안 족속'},
+  moab:      {b:-2066, d:null,  k:'est',  src:'창 19:37', nat:'모압 족속'},
+  ammon:     {b:-2066, d:null,  k:'est',  src:'창 19:38', nat:'암몬 족속'},
+  bethuel:   {b:-2130, d:null,  k:'est',  src:'창 22:22–23'},
+  rebekah:   {b:-2046, d:null,  k:'est',  src:'창 24:15'},
+  laban:     {b:-2050, d:null,  k:'est',  src:'창 24:29', n:'리브가의 오라버니 (창 24:29). 야곱이 84세에 결혼했으니 라반은 100세가 넘어 레아·라헬을 낳은 셈이에요'},
+  isaac:     {b:-2066, d:-1886, k:'chr',  src:'창 21:5, 35:28', main:1, mar:-2026},
+  esau:      {b:-2006, d:null,  k:'chr',  src:'창 25:26', nat:'에돔 족속'},
+  jacob:     {b:-2006, d:-1859, k:'chr',  src:'창 25:26, 47:28', main:1, mar:-1922},
+  leah:      {b:-1945, d:null,  k:'est',  src:'창 29:16'},
+  rachel:    {b:-1940, d:-1900, k:'est',  src:'창 29:16, 35:19'},
+  bilhah:    {b:-1950, d:null,  k:'est',  src:'창 29:29, 30:3'},
+  zilpah:    {b:-1950, d:null,  k:'est',  src:'창 29:24, 30:9'},
+  // ---- 야곱의 열두 아들 (하란 20년 중 8–14년째에 태어남) ----
+  reuben:    {b:-1921, d:null,  k:'est',  src:'창 29:32'},
+  simeon:    {b:-1920, d:null,  k:'est',  src:'창 29:33'},
+  levi:      {b:-1919, d:-1782, k:'est',  src:'창 29:34, 출 6:16', main:1, n:'137세 (출 6:16). 출생 연도는 추정'},
+  judah:     {b:-1918, d:null,  k:'est',  src:'창 29:35', main:1, n:'다윗과 예수로 이어지는 줄기 (3주에 계속)'},
+  dan:       {b:-1919, d:null,  k:'est',  src:'창 30:6'},
+  naphtali:  {b:-1918, d:null,  k:'est',  src:'창 30:8'},
+  gad:       {b:-1917, d:null,  k:'est',  src:'창 30:11'},
+  asher:     {b:-1916, d:null,  k:'est',  src:'창 30:13'},
+  issachar:  {b:-1916, d:null,  k:'est',  src:'창 30:18'},
+  zebulun:   {b:-1915, d:null,  k:'est',  src:'창 30:20'},
+  dinah:     {b:-1915, d:null,  k:'est',  src:'창 30:21'},
+  joseph:    {b:-1915, d:-1805, k:'chr',  src:'창 30:24, 41:46, 45:6, 47:9, 50:26', n:'야곱 91세에 출생 (야곱 130세 때 요셉 39세)'},
+  benjamin:  {b:-1900, d:null,  k:'est',  src:'창 35:18'},
+  asenath:   {b:-1905, d:null,  k:'est',  src:'창 41:45', mar:-1885},
+  manasseh:  {b:-1882, d:null,  k:'est',  src:'창 41:50–51', n:'흉년 전에 태어남 (연도는 근사)'},
+  ephraim:   {b:-1880, d:null,  k:'est',  src:'창 41:50–52', n:'흉년 전에 태어남 (연도는 근사)'},
+  // ---- 출애굽 세대 ----
+  kohath:    {b:-1885, d:-1752, k:'est',  src:'창 46:11, 출 6:18', main:1, n:'133세 (출 6:18). 이집트로 갈 때 이미 태어남'},
+  amram:     {b:-1610, d:-1473, k:'est',  src:'출 6:18, 20', main:1, n:'137세 (출 6:20). 이 표에서 고핫은 아므람이 태어나기 140년쯤 전에 죽어요. 모세 때 고핫 자손이 8,600명(민 3:27–28)이라 그 사이에 생략된 세대가 있다고 보는 견해가 많아요'},
+  jochebed:  {b:-1570, d:null,  k:'est',  src:'출 6:20, 민 26:59', n:'"레위의 딸"이라 하지만 세대가 생략됐을 수 있어요', mar:-1550},
+  miriam:    {b:-1535, d:-1407, k:'est',  src:'출 2:4, 민 20:1, 33:38'},
+  aaron:     {b:-1530, d:-1407, k:'chr',  src:'출 7:7, 민 33:38–39', mar:-1505},
+  moses:     {b:-1526, d:-1406, k:'chr',  src:'출 7:7, 신 34:7', main:1, mar:-1485},
+  elisheba:  {b:-1530, d:null,  k:'est',  src:'출 6:23', anc:'judah', ancN:'암미나답의 딸, 유다 지파 (룻 4:19–20)'},
+  nadab:     {b:-1500, d:-1445, k:'est',  src:'레 10:1–2'},
+  abihu:     {b:-1498, d:-1445, k:'est',  src:'레 10:1–2'},
+  eleazar:   {b:-1495, d:-1380, k:'est',  src:'민 20:28, 수 24:33'},
+  ithamar:   {b:-1490, d:null,  k:'est',  src:'출 6:23'},
+  phinehas:  {b:-1465, d:null,  k:'est',  src:'출 6:25, 민 25:7'},
+  jethro:    {b:-1550, d:null,  k:'est',  src:'출 2:16, 18장', anc:'midian', ancN:'미디안 제사장'},
+  zipporah:  {b:-1515, d:null,  k:'est',  src:'출 2:21'},
+  gershom:   {b:-1480, d:null,  k:'est',  src:'출 2:22'},
+  eliezer:   {b:-1475, d:null,  k:'est',  src:'출 18:4'},
+  nun:       {b:-1560, d:null,  k:'est',  src:'민 13:8, 16', anc:'ephraim', ancN:'에브라임 지파 (대상 7:20–27)'},
+  joshua:    {b:-1490, d:-1380, k:'est',  src:'수 24:29, 출 33:11', n:'110세 (수 24:29). 이 표에서는 출애굽 때 40대. 출 33:11은 모세의 수종자인 그를 "젊은 여호수아"라 불러요'},
+  jephunneh: {b:-1540, d:null,  k:'est',  src:'민 13:6, 32:12', anc:'judah', ancN:'유다 지파에 속한 그니스 사람'},
+  caleb:     {b:-1485, d:null,  k:'chr',  src:'수 14:7, 10', n:'정탐 때 40세, 땅 분배 때 85세'},
+  job:       {b:-2050, d:-1840, k:'est',  src:'욥 1:1, 42:16', n:'족보 관계가 없는 사람. 족장 시대로 보는 추정'},
+};
+
+// 시대 띠와 사건선
+const ERAS = [
+  {from:-4200, to:-2518, t:'창조 ~ 홍수', ref:'창 1–9장'},
+  {from:-2518, to:-2091, t:'홍수 ~ 아브라함의 떠남', ref:'창 10–11장'},
+  {from:-2091, to:-1876, t:'족장 시대', ref:'창 12–46장'},
+  {from:-1876, to:-1446, t:'이집트 430년', ref:'창 46장 – 출 12장'},
+  {from:-1446, to:-1370, t:'출애굽 · 광야 · 정복', ref:'출 12장 – 여호수아'},
+];
+const MARKS = [
+  {y:-2518, t:'홍수', note:'창세기 숫자로 계산'},
+  {y:-2091, t:'아브라함, 가나안으로'},
+  {y:-1876, t:'야곱 가족, 이집트로'},
+  {y:-1446, t:'출애굽'},
+  {y:-1406, t:'요단을 건넘'},
+];
 
 // ===== 렌더링 =====
 const PX=100,PY=117;
 const proj=([lon,lat])=>[(lon-20)*PX,(50-lat)*PY];
 const $=id=>document.getElementById(id);
-const svg=$('map'),L={geo:$('geo'),regions:$('regions'),routes:$('routes'),places:$('places'),people:$('people')};
+const svg=$('map'),L={geo:$('geo'),regions:$('regions'),routes:$('routes'),places:$('places'),journey:$('journey'),people:$('people')};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 const WEEKS={1:'처음부터 요셉까지',2:'이집트에서 가나안까지'};
@@ -753,7 +896,7 @@ let labT=null;
 function scheduleLabels(){if(labT)cancelAnimationFrame(labT);labT=requestAnimationFrame(placeLabels);}
 function placeLabels(){labT=null;
   const taken=[];const hit=(a,b)=>!(a.x+a.w<b.x||b.x+b.w<a.x||a.y+a.h<b.y||b.y+b.h<a.y);
-  const nodes=[...L.places.querySelectorAll('.place')];
+  const nodes=[...L.places.querySelectorAll('.place'),...L.journey.querySelectorAll('.place')];
   nodes.forEach(n=>{const sx=n.dataset.x/k,sy=n.dataset.y/k;const b=n.classList.contains('pm')?10:6;taken.push({x:sx-b,y:sy-b,w:2*b,h:2*b});});
   L.people.querySelectorAll('.person').forEach(n=>{const sx=n.dataset.x/k,sy=n.dataset.y/k;const r=n.querySelector('rect');taken.push({x:sx+9,y:sy+ +r.getAttribute('y'),w:+r.getAttribute('width'),h:18});});
   const order=['r','l','tr','tl','br','bl','t','b'];
@@ -769,7 +912,7 @@ function placeLabels(){labT=null;
 }
 function goTo(v,instant){
   if(anim)cancelAnimationFrame(anim);
-  if(instant||reduced){apply(v);return;}
+  if(instant||reduced||document.hidden){apply(v);return;}
   const f={...V},t0=performance.now(),D=600;
   const step=t=>{let p=Math.min(1,(t-t0)/D);p=p<.5?2*p*p:-1+(4-2*p)*p;
     apply({x:f.x+(v.x-f.x)*p,y:f.y+(v.y-f.y)*p,w:f.w+(v.w-f.w)*p,h:f.h+(v.h-f.h)*p});
@@ -792,7 +935,7 @@ function drawRegions(layer,extra){
   L.regions.innerHTML=rh;
 }
 function render(i,instant){
-  setMode('scene');cur=i;const s=SCENES[i];
+  cur=i;const s=SCENES[i];clearJourney(true);
   drawRegions(s.layer,s.extra);
   // 경로
   let rt='';
@@ -823,8 +966,8 @@ function render(i,instant){
   // 패널
   $('hTitle').textContent=s.title;$('hRef').textContent=s.ref;$('hEra').textContent=s.era;
   {const wk=SCENES.filter(x=>x.week===s.week);const j=wk.indexOf(s);$('mpos').textContent=`${s.week}주 ${j+1}/${wk.length}`;$('mprev').disabled=i===0;$('mnext').disabled=i===SCENES.length-1;}
-  $('info').innerHTML=`<span class="era">${esc(s.era)}</span><h2>${esc(s.title)}</h2><p class="ref">${esc(s.ref)}</p><p class="note">${esc(s.note)}</p>`+
-    (s.events.length?`<ul class="evs">${s.events.map(e=>`<li><span class="at" data-at="${esc(e.at)}" tabindex="0">${esc(PLACES[e.at]?.short||e.at)}</span><span>${esc(e.t)}<span class="rf">${esc(e.ref)}</span></span></li>`).join('')}</ul>`:'');
+  $('info').innerHTML=`<span class="era">${esc(s.era)}</span><h2>${esc(s.title)}</h2><p class="ref">${esc(s.ref)}</p><p class="note">${linkify(s.note)}</p>`+
+    (s.events.length?`<ul class="evs">${s.events.map(e=>`<li><span class="at" data-at="${esc(e.at)}" tabindex="0">${esc(PLACES[e.at]?.short||e.at)}</span><span>${linkify(e.t)}<span class="rf">${esc(e.ref)}</span></span></li>`).join('')}</ul>`:'');
   document.querySelectorAll('#list button').forEach(b=>b.setAttribute('aria-current',+b.dataset.i===i?'true':'false'));
   const cb=document.querySelector(`#list button[data-i="${i}"]`);if(cb)cb.scrollIntoView({block:'nearest',inline:'nearest'});
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',+b.dataset.w===s.week?'true':'false'));
@@ -832,79 +975,84 @@ function render(i,instant){
   hideTip();
   try{history.replaceState(null,'',`#${s.id}`);}catch(e){}
 }
-function buildList(w){const list=$('list');const key=mode==='person'?'P':'w'+w;if(list.dataset.w===key)return;list.dataset.w=key;
-  if(mode==='person'){list.innerHTML=PEOPLE.map((p,i)=>p.steps?`<li><button data-pid="${p.id}" aria-current="false"><span class="n"><i class="sw" style="background:var(--c-${p.color||'law'})"></i></span><span class="t">${esc(p.name)}</span><span class="r">${esc(p.era||'')}</span></button></li>`:'').join('');return;}
+function buildList(w){const list=$('list');const key='w'+w;if(list.dataset.w===key)return;list.dataset.w=key;
   list.innerHTML=SCENES.map((s,i)=>s.week===w?`<li><button data-i="${i}" aria-current="${i===cur}"><span class="n">${s.id.split('-')[1]}</span><span class="t">${esc(s.title)}</span><span class="r">${esc(s.ref)}</span></button></li>`:'').join('');}
 
-// ===== 인물별 =====
-let mode='scene',curP=-1;
+// ===== 인물: 설명 속 이름 → 가계도 창, 여정은 지도 위에 겹쳐 그리기 =====
 const PID={};PEOPLE.forEach((p,i)=>PID[p.id]=i);
 const byId=id=>PEOPLE[PID[id]];
-const kidsOf=id=>PEOPLE.filter(q=>q.f===id||q.m===id);
-const sibsOf=p=>PEOPLE.filter(q=>q!==p&&((p.f&&q.f===p.f)||(p.m&&q.m===p.m)));
-const spousesOf=p=>{const set=new Set(p.s||[]);PEOPLE.forEach(q=>{if((q.s||[]).includes(p.id))set.add(q.id);});return[...set].map(byId).filter(Boolean);};
-const lineage=p=>{const out=[];let c=p,g=0;while(c&&g++<60){out.unshift(c);c=c.f?byId(c.f):null;}return out;};
-const chip=q=>`<button class="pc" data-pid="${q.id}">${esc(q.name)}</button>`;
-const MAINS=PEOPLE.filter(p=>p.steps);
-function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m?'true':'false'));$('tabs').hidden=m==='person';$('pfind').hidden=m!=='person';$('mprev').textContent=m==='person'?'‹ 이전 인물':'‹ 이전 장면';$('mnext').textContent=m==='person'?'다음 인물 ›':'다음 장면 ›';}
+const LIFEX=typeof LIFE!=='undefined'?LIFE:{};
+// 이름 찾기: 장소·민족 이름과 겹치거나 흔한 말과 겹치는 이름은 자동 연결에서 뺌 (지도의 인물 알약으로는 열 수 있음)
+const NOLINK=new Set(['하란','단','가나안','미디안','모압','나홀','셈','함','눈','갓','엘리에셀','이스라엘']);
+const ALIAS={'아브람':'abraham','사래':'sarah','르우엘':'jethro','벤암미':'ammon'};
+const NAMEMAP={};
+PEOPLE.forEach(p=>{if(p.id==='israel')return;const base=p.name.replace(/\s*\(.*\)\s*$/,'');if(!NOLINK.has(base)&&!NAMEMAP[base])NAMEMAP[base]=p.id;});
+Object.entries(ALIAS).forEach(([n,id])=>{if(PID[id]!==undefined)NAMEMAP[n]=id;});
+const NAMES=Object.keys(NAMEMAP).sort((a,b)=>b.length-a.length);
+const PART='이에요|예요|이라|이고|이랑|으로|처럼|까지|부터|한테|하고|보다|에게|께서|이|가|은|는|을|를|의|에|과|와|도|만|께|로|아|야|랑';
+let NAME_RE=null;try{NAME_RE=new RegExp(`(?<![가-힣])(${NAMES.join('|')})(?=$|[^가-힣]|(?:${PART}))`,'g');}catch(e){NAME_RE=null;}
+function linkify(t){const h=esc(t);if(!NAME_RE)return h;return h.replace(NAME_RE,(m)=>`<button class="who" data-pid="${NAMEMAP[m]}">${m}</button>`);}
+function personFromPill(text){const q=PEOPLE.find(p=>p.name===text);if(q)return q;for(const n of NAMES){if(text.includes(n))return byId(NAMEMAP[n]);}return PEOPLE.find(p=>p.id!=='israel'&&text.includes(p.name.replace(/\s*\(.*\)\s*$/,'')))||(text.includes('이스라엘')?byId('israel'):null);}
+
+// --- 가계도 창 ---
+let pwId=null;
+function yrsOf(id){const L=LIFEX[id];if(!L)return'';const est=L.k==='est'?'~':'';return `BC ${est}${-L.b}–${L.d!=null?-L.d:'?'}${L.d!=null?` · ${L.d-L.b}세`:''}`;}
+function fillWin(id){const p=byId(id);if(!p)return;pwId=id;$('pwName').textContent=p.name;$('pwYrs').textContent=yrsOf(id);
+  $('pwWhy').textContent=p.why||p.note||'';$('pwFull').href=`genealogy.html#p-${id}`;
+  const j=$('pwJourney');j.hidden=!(p.steps&&p.steps.length);j.setAttribute('aria-pressed',jId===id?'true':'false');j.textContent=jId===id?'여정 지우기':`${p.name.replace(/\s*\(.*\)\s*$/,'')}의 여정을 지도에 그리기`;}
+function openPerson(id){const p=byId(id);if(!p)return;hideTip();
+  const fr=$('pwFrame');const want=`embed-p-${id}`;
+  if(id==='israel'){fr.hidden=true;}else{fr.hidden=false;
+    try{if(fr.dataset.ready==='1'&&fr.contentWindow){fr.contentWindow.location.hash=want;}else{fr.src=`genealogy.html#${want}`;}}catch(e){fr.src=`genealogy.html#${want}`;}}
+  fillWin(id);fold(false);$('pwin').hidden=false;}
+function fold(on){$('pwin').classList.toggle('mini',on);$('pwFold').textContent=on?'가계도 펼치기':'가계도 접기';$('pwFold').setAttribute('aria-expanded',on?'false':'true');}
+function closePerson(){$('pwin').hidden=true;pwId=null;}
+$('pwFold').addEventListener('click',()=>fold(!$('pwin').classList.contains('mini')));
+$('pwFrame').addEventListener('load',()=>{$('pwFrame').dataset.ready='1';});
+addEventListener('message',e=>{const d=e.data;if(d&&d.bibleTree==='sel'&&d.id&&!$('pwin').hidden&&PID[d.id]!==undefined&&d.id!==pwId)fillWin(d.id);});
+$('pwX').addEventListener('click',closePerson);
+$('pwJourney').addEventListener('click',()=>{if(!pwId)return;if(jId===pwId)clearJourney();else{drawJourney(pwId);fold(true);}fillWin(pwId);});
+
+// --- 여정 겹쳐 그리기 ---
+let jId=null;
 function fitPoints(pts){let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;pts.forEach(([x,y])=>{x1=Math.min(x1,x);y1=Math.min(y1,y);x2=Math.max(x2,x);y2=Math.max(y2,y);});
   let w=Math.max(x2-x1,220),h=Math.max(y2-y1,220);const cx=(x1+x2)/2,cy=(y1+y2)/2;w*=1.4;h*=1.4;return{x:cx-w/2,y:cy-h/2,w,h};}
-function renderPerson(j,instant){
-  setMode('person');curP=j;const p=PEOPLE[j];const C=`var(--c-${p.color||'law'})`;
-  drawRegions(p.layer||'w1',p.extra);
-  let rt='',ph='';const uniq=new Map();
-  if(p.steps){const P=p.steps.map(st=>proj(PLACES[st.at].p));
-    for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(a[0]===b[0]&&a[1]===b[1])continue;
-      rt+=`<path class="route ${p.steps[i].est?'dashed':'solid'}" d="M${a[0].toFixed(1)},${a[1].toFixed(1)} L${b[0].toFixed(1)},${b[1].toFixed(1)}" stroke="${C}"/>`;
-      const ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;rt+=`<g class="pt arrow" data-x="${b[0]}" data-y="${b[1]}" data-r="${ang.toFixed(1)}"><path d="M-7,0 L-16,-4.5 L-13,0 L-16,4.5Z" fill="${C}"/></g>`;}
-    p.steps.forEach((st,i)=>{if(!uniq.has(st.at))uniq.set(st.at,[]);uniq.get(st.at).push(i+1);});}
-  else if(p.at){uniq.set(p.at,[]);}
+function drawJourney(id){const p=byId(id);if(!p||!p.steps)return;jId=id;const C=`var(--c-${p.color||'law'})`;
+  drawRegions(p.layer||SCENES[cur].layer,p.extra||SCENES[cur].extra);
+  let rt='',ph='';const uniq=new Map();const P=p.steps.map(st=>proj(PLACES[st.at].p));
+  for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(a[0]===b[0]&&a[1]===b[1])continue;
+    rt+=`<path class="route ${p.steps[i].est?'dashed':'solid'}" d="M${a[0].toFixed(1)},${a[1].toFixed(1)} L${b[0].toFixed(1)},${b[1].toFixed(1)}" stroke="${C}"/>`;
+    const ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;rt+=`<g class="pt arrow" data-x="${b[0]}" data-y="${b[1]}" data-r="${ang.toFixed(1)}"><path d="M-7,0 L-16,-4.5 L-13,0 L-16,4.5Z" fill="${C}"/></g>`;}
+  p.steps.forEach((st,i)=>{if(!uniq.has(st.at))uniq.set(st.at,[]);uniq.get(st.at).push(i+1);});
   uniq.forEach((nums,n)=>{const pl=PLACES[n];const [x,y]=proj(pl.p);const pos=LABP[pl.lab||'r'];
-    ph+=`<g class="pt place pm" style="--pc:${C}" data-x="${x}" data-y="${y}" data-n="${esc(n)}" tabindex="0"><circle class="halo" r="15"/><circle class="dot" r="${nums.length?8:6}"/>${nums.length?`<text class="num" style="font-size:${nums.length>1?'7.5px':'9.5px'}">${nums.length>3?nums[0]+'…':nums.join('·')}</text>`:''}<text class="pl" x="${pos[0]}" y="${pos[1]}" text-anchor="${pos[2]}">${esc(n)}</text></g>`;});
-  L.routes.innerHTML=rt;L.places.innerHTML=ph;L.people.innerHTML='';
-  if(uniq.size){sceneV=fitPoints([...uniq.keys()].map(n=>proj(PLACES[n].p)));goTo(sceneV,instant);$('refit').hidden=true;}
-  else{rescale();}
-  if(!reduced&&!instant){L.routes.querySelectorAll('.route.solid').forEach((q,i)=>{const len=q.getTotalLength();q.style.strokeDasharray=`${len} ${len}`;q.style.strokeDashoffset=len;q.getBoundingClientRect();q.style.transition=`stroke-dashoffset .5s ease ${.3+i*.12}s`;q.style.strokeDashoffset=0;q.addEventListener('transitionend',()=>{q.style.strokeDasharray='';q.style.transition='';},{once:true});});}
-  // 패널: 왜 나오나 · 족보 · 여정
-  const fam=[];const F=p.f&&byId(p.f),M=p.m&&byId(p.m);
-  if(F)fam.push(['아버지',[F]]);if(M)fam.push(['어머니',[M]]);const sp=spousesOf(p);if(sp.length)fam.push(['배우자',sp]);
-  const ch=kidsOf(p.id);if(ch.length)fam.push(['자녀',ch]);const sb=sibsOf(p);if(sb.length)fam.push(['형제',sb]);
-  const line=lineage(p);
-  $('info').innerHTML=`<span class="era">${esc(p.era||p.g||'')}</span><h2>${esc(p.name)}</h2>`+(p.why?`<p class="why">${esc(p.why)}</p>`:'')+(p.ref?`<p class="ref">${esc(p.ref)}</p>`:'')+(p.note?`<p class="note">${esc(p.note)}</p>`:'')
-    +(line.length>1?`<div class="lineage">${line.map(q=>q===p?`<span class="pc cur">${esc(q.name)}</span>`:chip(q)).join('<span class="sep">›</span>')}</div>`:'')
-    +(fam.length?`<dl class="fam">${fam.map(([kk,v])=>`<dt>${kk}</dt><dd>${v.map(chip).join('')}</dd>`).join('')}</dl>`:'')
-    +(p.steps?`<ol class="steps">${p.steps.map((st,i)=>`<li><span class="at" data-at="${esc(st.at)}" tabindex="0">${i+1}. ${esc(st.at)}</span><span>${esc(st.t)}<span class="rf">${esc(st.ref)}</span>${st.est?' <span class="est">추정</span>':''}</span></li>`).join('')}</ol>`:'');
-  $('hTitle').textContent=p.name;$('hRef').textContent=p.steps?`여정 ${p.steps.length}단계`:(p.g||'');$('hEra').textContent=p.era||'';
-  const mi=MAINS.indexOf(p);$('mpos').textContent=mi>=0?`인물 ${mi+1}/${MAINS.length}`:'족보';$('mprev').disabled=false;$('mnext').disabled=false;
-  buildList();document.querySelectorAll('#list button').forEach(b=>b.setAttribute('aria-current',b.dataset.pid===p.id?'true':'false'));
-  const cb=document.querySelector(`#list button[data-pid="${p.id}"]`);if(cb)cb.scrollIntoView({block:'nearest',inline:'nearest'});
-  $('pall').value=p.id;$('info').scrollTop=0;
-  hideTip();try{history.replaceState(null,'',`#p-${p.id}`);}catch(e){}
-}
-function stepPerson(d){const p=PEOPLE[curP];let mi=MAINS.indexOf(p);if(mi<0)mi=d>0?-1:0;mi=Math.max(0,Math.min(MAINS.length-1,mi+d));renderPerson(PID[MAINS[mi].id]);}
-function go(d){if(mode==='person')stepPerson(d);else render(Math.max(0,Math.min(SCENES.length-1,cur+d)));}
-// 인물 찾기 드롭다운
-{const groups=[];PEOPLE.forEach(p=>{const g=p.g||'주요 인물';if(!groups.includes(g))groups.push(g);});
- $('pall').innerHTML=`<option value="">인물 찾기 (족보 전체)…</option>`+groups.map(g=>`<optgroup label="${esc(g)}">${PEOPLE.filter(p=>(p.g||'주요 인물')===g).map(p=>`<option value="${p.id}">${esc(p.name)}${p.steps?' ·여정':''}</option>`).join('')}</optgroup>`).join('');
- $('pall').addEventListener('change',e=>{if(e.target.value)renderPerson(PID[e.target.value]);});}
-$('mode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.m==='person')renderPerson(curP>=0?curP:PID['abraham']);else render(cur>=0?cur:0);});
-L.people.addEventListener('click',e=>{const g=e.target.closest('.person');if(!g)return;const nm=g.querySelector('text').textContent;const q=PEOPLE.find(p=>p.name===nm)||PEOPLE.find(p=>nm.includes(p.name));if(q){e.stopPropagation();renderPerson(PID[q.id]);}});
+    ph+=`<g class="pt place pm" style="--pc:${C}" data-x="${x}" data-y="${y}" data-n="${esc(n)}" tabindex="0"><circle class="halo" r="15"/><circle class="dot" r="8"/><text class="num" style="font-size:${nums.length>1?'7.5px':'9.5px'}">${nums.length>3?nums[0]+'…':nums.join('·')}</text><text class="pl" x="${pos[0]}" y="${pos[1]}" text-anchor="${pos[2]}">${esc(n)}</text></g>`;});
+  L.journey.innerHTML=rt+ph;svg.classList.add('jr-on');
+  $('jname').textContent=`${p.name}의 여정 · ${p.steps.length}곳`;$('jchip').hidden=false;
+  goTo(fitPoints([...uniq.keys()].map(n=>proj(PLACES[n].p))));$('refit').hidden=false;
+  if(!reduced){L.journey.querySelectorAll('.route.solid').forEach((q,i)=>{const len=q.getTotalLength();q.style.strokeDasharray=`${len} ${len}`;q.style.strokeDashoffset=len;q.getBoundingClientRect();q.style.transition=`stroke-dashoffset .45s ease ${.25+i*.1}s`;q.style.strokeDashoffset=0;q.addEventListener('transitionend',()=>{q.style.strokeDasharray='';q.style.transition='';},{once:true});});}
+  rescale();}
+function clearJourney(silent){if(!jId&&silent)return;jId=null;L.journey.innerHTML='';svg.classList.remove('jr-on');$('jchip').hidden=true;
+  if(!silent){const s=SCENES[cur];drawRegions(s.layer,s.extra);goTo(sceneV);$('refit').hidden=true;rescale();}
+  if(pwId)fillWin(pwId);}
+$('jclear').addEventListener('click',()=>clearJourney());
+function go(d){render(Math.max(0,Math.min(SCENES.length-1,cur+d)));}
+L.people.addEventListener('click',e=>{const g=e.target.closest('.person');if(!g)return;const q=personFromPill(g.querySelector('text').textContent);if(q){e.stopPropagation();openPerson(q.id);}});
 $('tabs').innerHTML=Object.entries(WEEKS).map(([w,t])=>`<button role="tab" data-w="${w}" aria-selected="false">${w}주<b>${t}</b></button>`).join('');
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=SCENES.findIndex(s=>s.week===+b.dataset.w);if(i>=0)render(i);});
-$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pid)renderPerson(PID[b.dataset.pid]);else render(+b.dataset.i);});
+$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(b)render(+b.dataset.i);});
 $('prev').addEventListener('click',()=>go(-1));
 $('next').addEventListener('click',()=>go(1));
 $('mprev').addEventListener('click',()=>go(-1));
 $('mnext').addEventListener('click',()=>go(1));
-document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){go(1);}else if(e.key==='ArrowLeft'){go(-1);}else if(e.key==='Escape'){hideTip();}});
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){go(1);}else if(e.key==='ArrowLeft'){go(-1);}else if(e.key==='Escape'){if(!$('pwin').hidden)closePerson();else hideTip();}});
 $('refit').addEventListener('click',()=>{goTo(sceneV);$('refit').hidden=true;});
-$('info').addEventListener('click',e=>{const pc=e.target.closest('.pc[data-pid]');if(pc){renderPerson(PID[pc.dataset.pid]);return;}const a=e.target.closest('.at');if(!a)return;const el=L.places.querySelector(`.place[data-n="${CSS.escape(a.dataset.at)}"]`);if(!el)return;el.classList.remove('pulse');void el.getBoundingClientRect();el.classList.add('pulse');const r=el.getBoundingClientRect();showTip(a.dataset.at,r.left+r.width/2,r.top);setTimeout(()=>{if(!pinned)hideTip();},2200);});
+$('info').addEventListener('click',e=>{const w=e.target.closest('.who[data-pid]');if(w){openPerson(w.dataset.pid);return;}const a=e.target.closest('.at');if(!a)return;const el=L.places.querySelector(`.place[data-n="${CSS.escape(a.dataset.at)}"]`);if(!el)return;el.classList.remove('pulse');void el.getBoundingClientRect();el.classList.add('pulse');const r=el.getBoundingClientRect();showTip(a.dataset.at,r.left+r.width/2,r.top);setTimeout(()=>{if(!pinned)hideTip();},2200);});
 
 // 툴팁
 const tip=$('tip');let pinned=false;
 function showTip(n,px,py){const pl=PLACES[n];if(!pl)return;let ev;
-  if(mode==='person'){const p=PEOPLE[curP];ev=(p.steps||[]).map((st,i)=>({t:`${i+1}. ${st.t}`,ref:st.ref})).filter((_,i)=>p.steps[i].at===n);}
-  else{const s=SCENES[cur];ev=s.events.filter(e=>e.at===n);}
+  {const s=SCENES[cur];ev=s.events.filter(e=>e.at===n);}
+  if(jId){const p=byId(jId);ev=ev.concat((p.steps||[]).map((st,i)=>({t:`${p.name} ${i+1}. ${st.t}`,ref:st.ref})).filter((_,i)=>p.steps[i].at===n));}
   tip.innerHTML=`<b>${esc(n)}</b><div class="nt">${esc(pl.note||'')}</div>${ev.length?`<ul>${ev.map(e=>`<li>${esc(e.t)}<span class="rf">${esc(e.ref)}</span></li>`).join('')}</ul>`:''}`;
   tip.hidden=false;const r=tip.getBoundingClientRect();let x=px+14,y=py+14;
   if(x+r.width>innerWidth-8)x=px-r.width-14;if(x<8)x=8;if(y+r.height>innerHeight-8)y=py-r.height-14;if(y<8)y=8;
@@ -943,11 +1091,14 @@ svg.addEventListener('wheel',e=>{e.preventDefault();const r=rect();const f=Math.
   const nw=Math.min(6000,Math.max(60,V.w*f)),ff=nw/V.w;stopAnim();apply(viewAt(V.w*ff,V.h*ff,m,sx,sy,r));$('refit').hidden=false;},{passive:false});
 svg.addEventListener('dblclick',()=>{goTo(sceneV);$('refit').hidden=true;});
 addEventListener('resize',()=>apply(V));
-addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(mode==='person'&&h===`p-${PEOPLE[curP]?.id}`)return;if(mode==='scene'&&h===SCENES[cur]?.id)return;openHash(false);});
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h===SCENES[cur]?.id)return;openHash(false);});
 
 // 시작
 function openHash(instant){const h=(location.hash||'').slice(1);
-  if(h.startsWith('p-')&&PID[h.slice(2)]!==undefined){renderPerson(PID[h.slice(2)],instant);return true;}
+  if(h.startsWith('p-')&&PID[h.slice(2)]!==undefined){const id=h.slice(2),p=byId(id);const nm=p.name.replace(/\s*\(.*\)\s*$/,'');
+    let i=SCENES.findIndex(s=>s.people.some(q=>personFromPill(q.name)?.id===id));
+    if(i<0)i=SCENES.findIndex(s=>(s.note+s.events.map(e=>e.t).join(' ')).includes(nm));
+    render(i<0?0:i,instant);openPerson(id);if(p.steps){drawJourney(id);fold(true);fillWin(id);}return true;}
   const i=SCENES.findIndex(s=>s.id===h);if(i>=0){render(i,instant);return true;}return false;}
 if(!openHash(true))render(0,true);
 </script>
