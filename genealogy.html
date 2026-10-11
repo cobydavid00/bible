@@ -86,6 +86,11 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
 .nd .mb.skip{opacity:.35}
 .rib.skip{stroke-dasharray:2 9;opacity:.45}
 .ch.stub{cursor:pointer}
+.ch.rf{cursor:pointer}
+.ch.rf rect{fill:var(--surface);stroke:var(--node-line);stroke-dasharray:none}
+.ch.rf text{font-size:11.5px;fill:var(--ink-2)}
+.ch.rf:hover rect{stroke:var(--ink-2)}
+.far .ch.rf{display:none}
 .ch.stub rect{fill:var(--surface)}
 .ch.stub:hover rect{stroke:var(--ink-2)}
 .eras{display:flex;flex-direction:column;gap:8px;margin:0}
@@ -194,7 +199,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);fo
         <li><svg width="34" height="20"><line x1="2" y1="10" x2="32" y2="10" stroke="var(--wire)" stroke-width="2"/><circle cx="17" cy="10" r="4" fill="var(--paper)" stroke="var(--wire)" stroke-width="1.6"/></svg>결혼한 사이</li>
         <li><svg width="34" height="22"><path d="M17 1 V8 M6 8 H28 M6 8 V20 M28 8 V20" fill="none" stroke="var(--wire)" stroke-width="1.6"/></svg>아래로 갈라진 선은 자녀</li>
         <li><svg width="34" height="22"><circle cx="17" cy="11" r="9" fill="var(--accent)"/><text x="17" y="15" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">+3</text></svg>아직 안 보이는 자녀 수예요. 누르면 펼쳐져요</li>
-        <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--band)" stroke="var(--node-line)" stroke-dasharray="3 3"/></svg>이름만 한 명씩 이어지는 세대를 접어 둔 거예요 (예: 셋 … 라멕 · 8대). 누르면 그 자리에서 펼쳐져요</li>
+        <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--band)" stroke="var(--node-line)" stroke-dasharray="3 3"/></svg>이름만 한 명씩 이어지는 세대를 접어 둔 거예요 (예: 셋 … 라멕 · 8대). 누르면 그 자리에서 펼쳐지고, 펼친 줄 옆의 "⌃ 접기"를 누르면 다시 접혀요</li>
         <li><svg width="34" height="20"><rect x="1" y="2" width="32" height="16" rx="5" fill="none" stroke="var(--node-line)" stroke-dasharray="5 4"/></svg>같은 사람이 다른 자리에도 있다는 표시예요. 결혼해 간 사람이 태어난 집안 자리나, 두 번 결혼한 사람의 첫 결혼 자리(룻, 밧세바)에 있어요. 진짜 카드는 자녀를 낳은 배우자 옆에 있어요</li>
         <li><svg width="34" height="20"><rect x="1" y="3" width="32" height="14" rx="7" fill="var(--surface)" stroke="var(--node-line)" stroke-dasharray="3 3"/><text x="17" y="14" font-size="9" text-anchor="middle" fill="var(--ink-2)">↑</text></svg>성경이 지파나 조상만 알려 주는 사람이에요 (바울은 베냐민 지파). 누르면 그 조상에게로 가요</li>
         <li><svg width="34" height="20"><rect x="1" y="2" width="32" height="16" rx="5" fill="var(--node)" stroke="var(--node-line)"/><rect x="5" y="2" width="24" height="3" fill="var(--gold)"/></svg>이야기가 따라가는 줄기예요. 아담에서 아브라함, 유다, 다윗과 유다 왕들을 거쳐 예수님까지. 다윗 뒤로는 마태복음 1장 족보를 따라가고, 마태가 건너뛴 왕들 구간은 띠가 점선이에요. 모세에게 가는 레위 줄기도 금색이에요</li>
@@ -1465,7 +1470,7 @@ const spKeys=u=>[...(u.sp||[]).map(id=>({k:'p:'+id,t:'p',id})),...(u.asp||[]).ma
 // ===== 무엇을 보여줄지 (중심 인물 기준) =====
 let FOCUS=null,HL=null,FULL=!EMBED;const EXPK=new Set(),EXPC=new Set();
 function compute(F){
-  const vis=new Set(),ali=new Set(),keep=new Set([F,...EXPC]);MILE.forEach(m=>keep.add(m));
+  const vis=new Set(),ali=new Set(),keep=new Set([F]);MILE.forEach(m=>keep.add(m));
   const f=byId[F];
   const addBirth=id=>{if(ownerOf[id])ali.add(id);else vis.add(id);};
   if(FULL){P.forEach(q=>{vis.add(q.id);const bp=bpOf(q);if(ownerOf[q.id]&&bp&&bp.t!=='anc')ali.add(q.id);});}else{
@@ -1494,9 +1499,13 @@ function compute(F){
   // 외줄기 세대 접기
   // 전체 보기에서는 이름만 이어지는 3대 이상(셋 … 라멕, 셈 … 나홀)만 접고, 왕·주요 인물은 접지 않음
   const canFold=id=>{const p=byId[id];return !(TOP.has(id)||STORY.includes(id)||p.reign||p.nofold);};
-  const comp=u=>!u.chain&&!u.alias&&u.parent&&!(u.parent.chain&&u.parent.fixed)&&!keep.has(u.id)&&u.sp.length===0&&u.asp.length===0&&u.kids.length===1&&!u.kids[0].chain&&!EXPK.has(u.id)&&(!FULL||canFold(u.id));
+  const compBase=u=>!u.chain&&!u.alias&&u.parent&&!(u.parent.chain&&u.parent.fixed)&&!keep.has(u.id)&&u.sp.length===0&&u.asp.length===0&&u.kids.length===1&&!u.kids[0].chain&&!EXPK.has(u.id)&&(!FULL||canFold(u.id));
+  const comp=u=>compBase(u)&&!EXPC.has(u.id);
   const minRun=FULL?3:2;
-  const fold=u=>{u.kids=u.kids.map(c=>{if(!comp(c))return c;const run=[];let x=c;while(x&&comp(x)){run.push(x);x=x.kids[0];}
+  const fold=u=>{u.kids=u.kids.map(c=>{
+      if(!comp(c)){ // 펼쳐 둔 줄이면 첫 사람 옆에 '접기' 손잡이
+        if(compBase(c)&&!compBase(u)){const run=[];let x=c;while(x&&compBase(x)){run.push(x);x=x.kids[0];}if(run.length>=minRun&&run.some(r=>EXPC.has(r.id)))c.refold=run.map(r=>r.id);}
+        return c;}const run=[];let x=c;while(x&&comp(x)){run.push(x);x=x.kids[0];}
       if(run.length<minRun)return c;const ids=run.map(r=>r.id);
       const label=FULL?`${nm(byId[ids[0]])} … ${nm(byId[ids[ids.length-1]])} · ${run.length}대`:`⋯ ${run.length}대`;
       const ch={key:'c:'+ids[0]+'-'+ids[ids.length-1],chain:true,ids,label,kids:[x],parent:u};x.parent=ch;return ch;});
@@ -1515,11 +1524,13 @@ function prep(u,F){if(u.grid)return;
   if(leaves.length>=6){const i0=u.kids.findIndex(isLeaf);const others=u.kids.filter(c=>!isLeaf(c));
     const blk={key:'g:'+u.key,grid:true,items:leaves,cols:Math.min(GCOLS,leaves.length),parent:u,kids:[]};
     others.splice(Math.min(i0,others.length),0,blk);u.kids=others;}}
+const RFW=46,RFH=24,RFG=8;const boxOff=u=>u.refold?RFW+RFG:0;
 const chainW=u=>u.fixed?CHW:Math.max(CHW,Math.round(String(u.label||'').length*11.5+26));
 function measure(u){if(u.grid){u.rows=Math.ceil(u.items.length/u.cols);u.w=u.cols*NW+(u.cols-1)*GG;u.h=u.rows*NH+(u.rows-1)*GG;return;}
-  u.kids.forEach(measure);const ns=u.chain?0:(u.sp||[]).length+(u.asp||[]).length;u.uw=u.chain?chainW(u):(1+ns)*NW+ns*CG;
+  u.kids.forEach(measure);const ns=u.chain?0:(u.sp||[]).length+(u.asp||[]).length;u.uw=u.chain?chainW(u):(1+ns)*NW+ns*CG+boxOff(u);
   u.kw=u.kids.reduce((s,c)=>s+c.w,0)+Math.max(0,u.kids.length-1)*SG;u.w=Math.max(u.uw,u.kw);}
-function emitUnit(u,x0,y,out){out[(u.alias?'a:':'p:')+u.id]={t:u.alias?'a':'p',id:u.id,x:x0,y,hid:u.hid};
+function emitUnit(u,x0,y,out){if(u.refold)out['r:'+u.id]={t:'r',x:x0,y:y+(NH-RFH)/2,ids:u.refold};x0+=boxOff(u);
+  out[(u.alias?'a:':'p:')+u.id]={t:u.alias?'a':'p',id:u.id,x:x0,y,hid:u.hid};
   spKeys(u).forEach((s,i)=>{out[s.k]={t:s.t,id:s.id,x:x0+(i+1)*(NW+CG),y,hid:0};});}
 function emitGrid(u,x,y,out){out[u.key]={t:'g',x:x-GG,y:y-GG,w:u.w+2*GG,h:u.h+2*GG};
   u.items.forEach((it,i)=>{const ix=x+(i%u.cols)*(NW+GG),iy=y+Math.floor(i/u.cols)*(NH+GG);out[(it.alias?'a:':'p:')+it.id]={t:it.alias?'a':'p',id:it.id,x:ix,y:iy,hid:0};});}
@@ -1569,7 +1580,7 @@ function mergeInto(M,C,o){C.forEach((lr,r)=>{const v=[lr[0]+o,lr[1]+o],m=M.get(r
 function contourOf(u){const own=new Map();
   if(u.grid){for(let i=0;i<u.span;i++)own.set(u.row+i,[-u.w/2,u.w/2]);return own;}
   if(u.chain){for(let r=u.row;r<=u.rowEnd;r++)own.set(r,[-u.uw/2,u.uw/2]);}
-  else{own.set(u.row,[-u.uw/2,u.uw/2]);if(u.stub){const oc=-u.uw/2+NW/2;own.set(u.row-1,[oc-CHW/2,oc+CHW/2]);}}
+  else{own.set(u.row,[-u.uw/2,u.uw/2]);if(u.stub){const oc=-u.uw/2+boxOff(u)+NW/2;own.set(u.row-1,[oc-CHW/2,oc+CHW/2]);}}
   u.offs=[];if(!u.kids.length)return own;
   let M=null;const offs=[];
   u.kids.forEach(c=>{const C=contourOf(c);if(!M){M=new Map(C);offs.push(0);return;}
@@ -1605,7 +1616,7 @@ function layoutFull(F){const roots=compute(F);roots.forEach(r=>prep(r,F));roots.
     if(u.grid){emitGrid(u,u.cx-u.w/2,y,out);return;}
     if(u.chain)out[u.key]={t:'c',x:u.cx-u.uw/2,y:u.rowEnd*ROWH+(NH-CHH)/2,w:u.uw,label:u.label,ids:u.ids,fixed:!!u.fixed};
     else{const x0=u.cx-u.uw/2;emitUnit(u,x0,y,out);
-      if(u.stub)out['s:'+u.id]={t:'s',x:x0+NW/2-CHW/2,y:(u.row-1)*ROWH+(NH-CHH)/2,label:'↑ '+u.stub.label,anc:u.stub.anc};}
+      if(u.stub)out['s:'+u.id]={t:'s',x:x0+boxOff(u)+NW/2-CHW/2,y:(u.row-1)*ROWH+(NH-CHH)/2,label:'↑ '+u.stub.label,anc:u.stub.anc};}
     u.kids.forEach(emit);};
   order.forEach(emit);
   let x0=Infinity,x1=-Infinity,yb=0;Object.values(out).forEach(e=>{const b=boxOf(e);x0=Math.min(x0,b.x);x1=Math.max(x1,b.x+b.w);yb=Math.max(yb,b.y+b.h);});FX=[x0,x1];
@@ -1618,7 +1629,7 @@ let CUR={},LINKS=[],anim=null;
 const mainIds=new Set(P.filter(p=>p.main).map(p=>p.id));
 const tierOf=id=>TOP.has(id)?1:mainIds.has(id)?2:byId[id]&&byId[id].key?3:4;
 const FS={1:15,2:14,3:13,4:12};
-function boxOf(e){if(e.t==='c')return{x:e.x,y:e.y,w:e.w||CHW,h:CHH};if(e.t==='s')return{x:e.x,y:e.y,w:CHW,h:CHH};if(e.t==='g')return{x:e.x,y:e.y,w:e.w,h:e.h};return{x:e.x,y:e.y,w:NW,h:NH};}
+function boxOf(e){if(e.t==='c')return{x:e.x,y:e.y,w:e.w||CHW,h:CHH};if(e.t==='r')return{x:e.x,y:e.y,w:RFW,h:RFH};if(e.t==='s')return{x:e.x,y:e.y,w:CHW,h:CHH};if(e.t==='g')return{x:e.x,y:e.y,w:e.w,h:e.h};return{x:e.x,y:e.y,w:NW,h:NH};}
 const keyId=k=>k.startsWith('m:')?k.slice(2).split('@')[0]:k.slice(2);
 function draw(S){let back='',w='',n='',ml='';
   if(FULL&&ERA_Y.length)ERA_Y.forEach((e,i)=>{back+=`<rect class="era${i%2?' alt':''}" x="${FX[0]-4000}" y="${e.y0}" width="${FX[1]-FX[0]+8000}" height="${e.y1-e.y0}"/>`;ml+=`<g class="erl" data-y0="${e.y0}" data-y1="${e.y1}" data-w="${e.t.length*12+8}"><text>${esc(e.t)}</text></g>`;});
@@ -1650,6 +1661,7 @@ function draw(S){let back='',w='',n='',ml='';
     if(e.t==='c'){const cw=e.w||CHW;const dm=HL&&!e.fixed&&!(e.ids||[]).some(i=>HL.has(i))?' dim':'';
       n+=`<g class="ch${e.fixed?' fixed':''}${dm}" data-chain="${e.ids.join(',')}"${e.fixed?'':` tabindex="0" role="button" aria-label="${esc(e.label)} 펼치기"`} transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${cw}" height="${CHH}" rx="${CHH/2}"/><text x="${cw/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;
       if(FULL&&!e.fixed)ml+=`<g class="mlg t3 fold${dm}" data-x="${e.x+cw/2}" data-y="${e.y+CHH/2}" data-p="3.5" data-w="${Math.round(e.label.length*11+8)}" data-h="16"><text class="ml" y="4" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
+    if(e.t==='r'){n+=`<g class="ch rf" data-refold="${e.ids.join(',')}" tabindex="0" role="button" aria-label="${esc(nm(byId[e.ids[0]]))}부터 ${e.ids.length}대 다시 접기" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${RFW}" height="${RFH}" rx="${RFH/2}"/><text x="${RFW/2}" y="${RFH/2+4}" text-anchor="middle">⌃ 접기</text></g>`;return;}
     if(e.t==='s'){const dm=HL&&!HL.has(keyId(kk))?' dim':'';n+=`<g class="ch stub${dm}" data-anc="${e.anc}" tabindex="0" role="button" aria-label="${esc(e.label)}: 조상에게로" transform="translate(${e.x} ${e.y})" opacity="${o}"><rect width="${CHW}" height="${CHH}" rx="${CHH/2}"/><text x="${CHW/2}" y="${CHH/2+4}" text-anchor="middle">${esc(e.label)}</text></g>`;return;}
     const p=byId[e.id];if(!p)return;const fo=e.id===FOCUS&&e.t==='p';const dm=HL&&!HL.has(e.id)?' dim':'';const rl=HL&&HL.has(e.id)&&!fo?' rel':'';
     const nmv=nm(p),len=nmv.length,tc=len>=9?' class="s3"':len>=7?' class="s2"':'';
@@ -1781,7 +1793,8 @@ function setMode(full){FULL=full;setTimeout(syncRefold,0);$('mode').textContent=
   if(!FULL&&!FOCUS)FOCUS='abraham';HL=FULL&&FOCUS?related(FOCUS):null;relayout({fit:true});if(FULL&&FOCUS)setTimeout(()=>panTo(FOCUS),480);if(FOCUS)showInfo(FOCUS);else if(FULL)introInfo();}
 function toggleKids(id){if(EXPK.has(id))EXPK.delete(id);else EXPK.add(id);relayout();}
 function openChain(ids){ids.forEach(i=>EXPC.add(i));relayout(FULL?{fit:false}:{});syncRefold();}
-function syncRefold(){$('refold').hidden=!(FULL&&EXPC.size);}
+function foldBack(ids){ids.forEach(i=>EXPC.delete(i));if(FULL&&FOCUS&&ids.includes(FOCUS)){FOCUS=null;HL=null;introInfo();try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}relayout(FULL?{fit:false}:{});syncRefold();}
+function syncRefold(){$('refold').hidden=!(FULL&&[...EXPC].some(i=>i!==FOCUS));}
 $('refold').addEventListener('click',()=>{EXPC.clear();if(FOCUS)EXPC.add(FOCUS);relayout({fit:false});syncRefold();});
 
 // ===== 입력 =====
@@ -1814,9 +1827,10 @@ function peek(on){if(!narrow()||EMBED)return;$('side').classList.toggle('peek',o
 $('fit').addEventListener('click',()=>{if(FULL)fitAll();else frameView(CUR);});
 const zoomBy=f=>{const a=area();const cx=V.x+((a.l+a.r)/2)*k,cy=V.y+((a.t+a.b)/2)*k;const nk=Math.min(KMAXZ,Math.max(.25,k*f));goV({x:cx-((a.l+a.r)/2)*nk,y:cy-((a.t+a.b)/2)*nk,w:a.W*nk});};
 $('zin').addEventListener('click',()=>zoomBy(1/1.4));$('zout').addEventListener('click',()=>zoomBy(1.4));
-G.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const s=e.target.closest('.ch.stub');if(s){e.preventDefault();focusOn(s.dataset.anc);return;}const fc=e.target.closest('.ch:not(.fixed):not(.stub)');if(fc){e.preventDefault();openChain(fc.dataset.chain.split(','));return;}const n=e.target.closest('.nd');if(n){e.preventDefault();focusOn(n.dataset.id);}});
+G.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const rf=e.target.closest('.rf');if(rf){e.preventDefault();foldBack(rf.dataset.refold.split(','));return;}const s=e.target.closest('.ch.stub');if(s){e.preventDefault();focusOn(s.dataset.anc);return;}const fc=e.target.closest('.ch:not(.fixed):not(.stub):not(.rf)');if(fc){e.preventDefault();openChain(fc.dataset.chain.split(','));return;}const n=e.target.closest('.nd');if(n){e.preventDefault();focusOn(n.dataset.id);}});
 function hitAt(x,y){const el=document.elementFromPoint(x,y);if(!el||!el.closest)return;
   const b=el.closest('.bd');if(b){toggleKids(b.dataset.exp);return;}
+  const rf=el.closest('.rf');if(rf){foldBack(rf.dataset.refold.split(','));return;}
   const s=el.closest('.ch.stub');if(s){focusOn(s.dataset.anc);peek(true);return;}
   const c=el.closest('.ch');if(c&&!c.classList.contains('fixed')){openChain(c.dataset.chain.split(','));return;}
   const n=el.closest('.nd');if(n){if(n.dataset.id!==FOCUS)focusOn(n.dataset.id);peek(true);return;}
